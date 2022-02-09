@@ -1,0 +1,1 @@
+# To access a sample of 1500 image of the IT-Sware/DB/QA/Web/Graphics/GIS category for year 2020, [Click Here](https://drive.google.com/drive/folders/1NY8LmxfjjuIuQJXhjAs_139kWYMlhBX9?usp=sharing)
