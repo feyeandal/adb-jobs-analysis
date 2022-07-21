@@ -4,7 +4,7 @@ import pandas as pd
 import pytesseract
 import enchant
 
-import ocr
+import ocr_extraction
 import preprocess_images
 
 pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract'

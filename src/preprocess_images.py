@@ -6,7 +6,6 @@ import math
 # https://www.youtube.com/watch?v=ADV-AjAXHdc&t=1698s
 # 
         
-        
 def isLightOrDark(rgbColor=[0,128,255]):
     """checks whether the image is light or dark"""
     [r,g,b] = rgbColor
