@@ -1,11 +1,9 @@
 import os
 import numpy as np
 import pandas as pd
-import pytesseract
 import enchant
-
 import ocr_extraction
-import preprocess_images
+import image_preprocessing
 
 pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract'
 
@@ -40,7 +38,7 @@ def strip_special_chars(text, schar_list, char_keep):
     return text_stripped
 
 
-def accuracy_calculator(string):
+def calculate_accuracy(string):
     """Checks a list of words against a dictionary and returns a ratio of valid words"""
     
     dic = enchant.Dict("en_US")
@@ -54,43 +52,46 @@ def accuracy_calculator(string):
     return (valid_count/len(string.split()))
 
 # ----------------------------------------------------------------------------------------------
+def strip_additional_characters(ocr_list):
+    """---"""
+    # execute the function on the i2t list to get a list of special characters
+    special = get_special_chars(ocr_list)
 
-text = ocr.extract_text(path, n=10)
-df = pd.DataFrame(text, index=np.arange(10))
+    # define characters you want to retain
+    char_keep = [' ', '#', '+', '\n', '/']
 
-i2t = list(df["ocrd_text"])
+    # execute the function and obtain ocr output stripped of special characters
+    stripped = strip_special_chars(ocr_list, special, char_keep)
 
-# execute the function on the i2t list to get a list of special characters
-special = get_special_chars(i2t)
+    return stripped
 
-# define characters you want to retain
-char_keep = [' ', '#', '+', '\n', '/']
+def compile_accuracy(df):
+    """
+    placeholder
+    """
+    df["plain_accuracy"] = df["ocrd_text"].apply(calculate_accuracy)
+    df["clean_text"] = df.strip_additional_characters(df["ocrd_text"])
+    df["clean_accuracy"] = df["clean_text"].apply(calculate_accuracy)
+    return df
 
-# execute the function and obtain ocr output stripped of special characters
-stripped = strip_special_chars(i2t, special, char_keep)
+def update_ocr(df):
+    """
+    placeholder
+    """
+    df = compile_accuracy(df)
 
-df["clean"] = pd.Series(stripped)
-#accuracy calculation
-df["plain_accuracy"] = df["ocrd_text"].apply(accuracy_calculator)
-df["clean_accuracy"] = df["clean"].apply(accuracy_calculator)
+    #Loop through the dataframe, find bad OCR, preprocess images to improve ocr
+    for index in df.index:
+        if df.loc[index,'clean_accuracy'] < 0.9:
+            vacancy = df.loc[index, 'image_id']
+            binarized =  image_preprocessing.binarization(os.path.join(path, vacancy)) #update with extended functionality when read
+            df.loc[index, 'ocrd_text'] = ocr_extraction.extract_text(binarized)
+            df.loc[index, 'clean_text'] = df.strip_additional_characters(df["ocrd_text"])
+            df.loc[index, 'plain_accuracy'] = calculate_accuracy(df.loc[index, 'ocrd_text'])
+            df.loc[index, 'clean_accuracy'] = calculate_accuracy(df.loc[index, 'clean'])
+    return df
 
-
-for index in df.index:
-    if df.loc[index,'clean_accuracy'] < 0.9:
-        vacancy = df.loc[index, 'job_id']
-        binarized =  preprocess_images.binarization(os.path.join(path, vacancy))
-        df.loc[index, 'ocrd_text'] = pytesseract.image_to_string(binarized)
-        special = get_special_chars([df.loc[index, 'ocrd_text']])
-        df.loc[index, 'clean'] = strip_special_chars([df.loc[index, 'ocrd_text']], special, char_keep)[0]
-        df.loc[index, 'plain_accuracy'] = accuracy_calculator(df.loc[index, 'ocrd_text'])
-        df.loc[index, 'clean_accuracy'] = accuracy_calculator(df.loc[index, 'clean'])
-        
-# ----------------------------------------------------------------------------------------------
-
-save_path = "E:/ADB_Project/code/data/pipeline_sample.csv"
-
-df.to_csv(save_path, index=False)
-
+    
 
 
 
