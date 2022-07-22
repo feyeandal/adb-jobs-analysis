@@ -8,7 +8,10 @@ from pathlib import Path
 
 pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract'
 
-def extract_text(path, n=3):
+def extract_text(image_path):
+    return pytesseract.image_to_string(image_path)
+
+def extract_bulk(path, n=3):
     """ returns a list containing OCR'd text from a given directory"""
     
     indexes = []
@@ -16,11 +19,11 @@ def extract_text(path, n=3):
     
     for vacancy in os.listdir(path)[:n]:
         indexes.append(vacancy)
-        text = pytesseract.image_to_string(f"{path}/{vacancy}")
+        text = extract_text(f"{path}/{vacancy}")
         image2text.append(text)
         
     ocrd = {
-        "job_id": indexes,
+        "image_id": indexes,
         "ocrd_text": image2text
     }
 
