@@ -63,21 +63,10 @@ def strip_additional_characters(ocr_list):
 
     return stripped
 
-def compile_accuracy(df):
-    """
-    placeholder
-    """
-    df["plain_accuracy"] = df["ocrd_text"].apply(calculate_accuracy)
-    df["clean_text"] = df.strip_additional_characters(df["ocrd_text"])
-    df["clean_accuracy"] = df["clean_text"].apply(calculate_accuracy)
-    return df
-
 def update_ocr(df):
     """
-    placeholder
+    #loops through the dataframe, find bad OCR, preprocess images to improve ocr
     """
-
-    #Loop through the dataframe, find bad OCR, preprocess images to improve ocr
     for index in df.index:
         if df.loc[index,'clean_accuracy'] < 0.9:
             vacancy = df.loc[index, 'image_id']
