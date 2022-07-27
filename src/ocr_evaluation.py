@@ -5,8 +5,6 @@ import enchant
 import ocr_extraction
 import image_preprocessing
 
-pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract'
-
 path = "E:/ADB_Project/code/data/cs_sample"
 
 # -------------------------------------------------------------------------------------------
@@ -33,7 +31,7 @@ def strip_special_chars(text, schar_list, char_keep):
     char_set = set([c for c in schar_list if c not in char_keep])
     
     # i2t_stripped -> stripped of special chars
-    text_stripped = [''.join([c for c in item if c not in char_set]) for item in text]
+    text_stripped = ' '.join(''.join([c for c in item if c not in char_set]) for item in text.split())
     
     return text_stripped
 
@@ -78,7 +76,6 @@ def update_ocr(df):
     """
     placeholder
     """
-    df = compile_accuracy(df)
 
     #Loop through the dataframe, find bad OCR, preprocess images to improve ocr
     for index in df.index:
@@ -86,9 +83,9 @@ def update_ocr(df):
             vacancy = df.loc[index, 'image_id']
             binarized =  image_preprocessing.binarization(os.path.join(path, vacancy)) #update with extended functionality when read
             df.loc[index, 'ocrd_text'] = ocr_extraction.extract_text(binarized)
-            df.loc[index, 'clean_text'] = df.strip_additional_characters(df["ocrd_text"])
+            df.loc[index, 'clean_text'] = strip_additional_characters(df.loc[index, 'ocrd_text'])
             df.loc[index, 'plain_accuracy'] = calculate_accuracy(df.loc[index, 'ocrd_text'])
-            df.loc[index, 'clean_accuracy'] = calculate_accuracy(df.loc[index, 'clean'])
+            df.loc[index, 'clean_accuracy'] = calculate_accuracy(df.loc[index, 'clean_text'])
     return df
 
     

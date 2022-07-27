@@ -33,6 +33,8 @@ def binarization(image_path):
             else:
                 pixelsNew[i,j] = (254,254,254)
     return img
+
+
    
     
     
