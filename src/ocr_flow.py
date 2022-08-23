@@ -3,17 +3,13 @@ import pandas as pd
 import ocr_extraction
 import ocr_evaluation
  
-read_path = "E:/ADB_Project/code/data/cs_sample"
-save_path = "E:/ADB_Project/code/data/pipeline_sample.csv" #change the declaration location 
+ #change the declaration location 
 
-def main():
+def main(read_path = "E:/ADB_Project/code/data/cs_sample", save_path = "E:/ADB_Project/code/data/pipeline_sample.csv"):
     """ reads images from a directory and saves final ocr output to a csv"""
     #uses the ocr_extraction sub-module to conduct initial OCR and build a dataframe
     text = ocr_extraction.extract_bulk(read_path)
-    ocr_df = pd.DataFrame(text, columns=["ocrd_text", "image_id"], index=text['image_id']) #insert column headers here
-
-    #extract job_id from image_id
-    ocr_df["job_id"] = [x.split(".")[0] for x in text['image_id']]
+    ocr_df = pd.DataFrame(text, columns=["vacancy_id", "file_path", "ocrd_text"]) #insert column headers here
     
     #basic cleaning to strip additional characters 
     ocr_df["clean_text"] = ocr_df["ocrd_text"].apply(ocr_evaluation.strip_additional_characters)
@@ -22,6 +18,8 @@ def main():
     ocr_df["plain_accuracy"] = ocr_df["ocrd_text"].apply(ocr_evaluation.calculate_accuracy)
     ocr_df["clean_accuracy"] = ocr_df["clean_text"].apply(ocr_evaluation.calculate_accuracy)
     
+    #TO DO - Add logging to the pipeline to 1. mark checkpoints, and 2. see how it's performing
+
     #iteratre through the dataset, identify poor quality ocr, preprocess images & perform ocr again
     ocr_df = ocr_evaluation.update_ocr(ocr_df)
 

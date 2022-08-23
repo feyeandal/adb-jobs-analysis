@@ -47,11 +47,11 @@ def calculate_accuracy(string):
         if dic.check(word) == True:
             valid_count += 1
             
-    return (valid_count/max(1, len(string.split())))
+    return (valid_count/max(1, len(string.split()))) #TO DO - LATER
 
 # ----------------------------------------------------------------------------------------------
-def strip_additional_characters(ocr_list):
-    """handles the stripping of additional characters for a list of strings"""
+def strip_additional_characters(ocr_list): #TO DO  - CONSOLIDATE FUNCTION
+    """handles the stripping of non alpha-numeric characters for a list of strings"""
     # execute the function on the i2t list to get a list of special characters
     special = get_special_chars(ocr_list)
 
@@ -63,13 +63,12 @@ def strip_additional_characters(ocr_list):
 
     return stripped
 
-def update_ocr(df):
+def update_ocr(df, threshold=0.85):
     """
-    #finds bad OCR, preprocess images to improve ocr
+    #for OCR accuracy values below a threshold, preprocess images to improve ocr and calculate accuracy metrics
     """
-    threshold = 0.85
-
-    df['ocrd_text'] = df.apply(lambda x: ocr_extraction.extract_text(image_preprocessing.binarization(os.path.join(PATH, x['image_id']))) if (x['clean_accuracy'] < threshold) else x['ocrd_text'], axis=1)
+    
+    df['ocrd_text'] = df.apply(lambda x: ocr_extraction.extract_text(image_preprocessing.binarization(x['file_path'])) if (x['clean_accuracy'] < threshold) else x['ocrd_text'], axis=1)
     df['clean_text'] = df.apply(lambda x: strip_additional_characters(x['ocrd_text']) if (x['clean_accuracy'] < threshold) else x['clean_text'], axis=1)
     df['plain_accuracy'] = df.apply(lambda x: calculate_accuracy(x['ocrd_text']) if (x['clean_accuracy'] < threshold) else x['plain_accuracy'], axis=1)
     df['clean_accuracy'] = df.apply(lambda x: calculate_accuracy(x['clean_text']) if (x['clean_accuracy'] < threshold) else x['clean_accuracy'], axis=1)
