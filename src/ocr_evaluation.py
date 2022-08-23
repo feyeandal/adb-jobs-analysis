@@ -47,7 +47,7 @@ def calculate_accuracy(string):
         if dic.check(word) == True:
             valid_count += 1
             
-    return (valid_count/len(string.split()))
+    return (valid_count/max(1, len(string.split())))
 
 # ----------------------------------------------------------------------------------------------
 def strip_additional_characters(ocr_list):
