@@ -5,7 +5,7 @@ import enchant
 import ocr_extraction
 import image_preprocessing
 
-path = "E:/ADB_Project/code/data/cs_sample"
+PATH = "E:/ADB_Project/code/data/cs_sample"
 
 # -------------------------------------------------------------------------------------------
 
@@ -51,7 +51,7 @@ def calculate_accuracy(string):
 
 # ----------------------------------------------------------------------------------------------
 def strip_additional_characters(ocr_list):
-    """---"""
+    """handles the stripping of additional characters for a list of strings"""
     # execute the function on the i2t list to get a list of special characters
     special = get_special_chars(ocr_list)
 
@@ -65,16 +65,15 @@ def strip_additional_characters(ocr_list):
 
 def update_ocr(df):
     """
-    #loops through the dataframe, find bad OCR, preprocess images to improve ocr
+    #finds bad OCR, preprocess images to improve ocr
     """
-    for index in df.index:
-        if df.loc[index,'clean_accuracy'] < 0.9:
-            vacancy = df.loc[index, 'image_id']
-            binarized =  image_preprocessing.binarization(os.path.join(path, vacancy)) #update with extended functionality when read
-            df.loc[index, 'ocrd_text'] = ocr_extraction.extract_text(binarized)
-            df.loc[index, 'clean_text'] = strip_additional_characters(df.loc[index, 'ocrd_text'])
-            df.loc[index, 'plain_accuracy'] = calculate_accuracy(df.loc[index, 'ocrd_text'])
-            df.loc[index, 'clean_accuracy'] = calculate_accuracy(df.loc[index, 'clean_text'])
+    threshold = 0.85
+
+    df['ocrd_text'] = df.apply(lambda x: ocr_extraction.extract_text(image_preprocessing.binarization(os.path.join(PATH, x['image_id']))) if (x['clean_accuracy'] < threshold) else x['ocrd_text'], axis=1)
+    df['clean_text'] = df.apply(lambda x: strip_additional_characters(x['ocrd_text']) if (x['clean_accuracy'] < threshold) else x['clean_text'], axis=1)
+    df['plain_accuracy'] = df.apply(lambda x: calculate_accuracy(x['ocrd_text']) if (x['clean_accuracy'] < threshold) else x['plain_accuracy'], axis=1)
+    df['clean_accuracy'] = df.apply(lambda x: calculate_accuracy(x['clean_text']) if (x['clean_accuracy'] < threshold) else x['clean_accuracy'], axis=1)
+
     return df
 
     

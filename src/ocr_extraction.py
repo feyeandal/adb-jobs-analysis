@@ -12,12 +12,12 @@ def extract_text(image_path):
     """ extracts text for a single image"""
     return pytesseract.image_to_string(image_path)
 
-def extract_bulk(path, n=3):
+def extract_bulk(path):
     """extract texts from all images in a directory and returns a dictionary of image id and ocr output"""
     indexes = []
     image2text = []
     
-    for vacancy in os.listdir(path)[:n]:
+    for vacancy in os.listdir(path):
         indexes.append(vacancy)
         text = extract_text(f"{path}/{vacancy}")
         image2text.append(text)
