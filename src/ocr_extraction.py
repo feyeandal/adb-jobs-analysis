@@ -25,7 +25,7 @@ def extract_bulk(path):
             vacancies.append(vacancy.split(".")[0])
             text = extract_text(f"{path}/{vacancy}")
             image2text.append(text)
-        except TesseractError as error:
+        except:
             tesseract_failures.append(vacancy)
             print(f"Tesseract Failure: {vacancy}")    
         
