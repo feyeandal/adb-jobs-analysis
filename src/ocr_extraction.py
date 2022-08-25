@@ -17,12 +17,17 @@ def extract_bulk(path):
     filepaths = []
     vacancies = []
     image2text = []
+    tesseract_failures = []
     
     for vacancy in os.listdir(path):
-        filepaths.append(f"{path}/{vacancy}")
-        vacancies.append(vacancy.split(".")[0])
-        text = extract_text(f"{path}/{vacancy}")
-        image2text.append(text)
+        try:
+            filepaths.append(f"{path}/{vacancy}")
+            vacancies.append(vacancy.split(".")[0])
+            text = extract_text(f"{path}/{vacancy}")
+            image2text.append(text)
+        except TesseractError as error:
+            tesseract_failures.append(vacancy)
+            print(f"Tesseract Failure: {vacancy}")    
         
     ocrd = {
         "vacancy_id": vacancies,
