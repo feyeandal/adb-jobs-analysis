@@ -23,31 +23,27 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import linear_kernel
 from urllib.parse import unquote
 
-folder_path = '/content/drive/MyDrive/LIRNEasia/ADB Project/'
-
 # Reading ONET Data
 
-def read_onet_data(folder_path, onet_path):
+def read_onet_data(occ_path, alt_path, tech_path):
+    '''Reads ONET occupation titles, alternate occupation titles, and technolgies associated with occupations from relevant sources.
+    Returns a combined dataset consisting of all of these details.'''
 
-    onet_occ = pd.read_csv(folder_path+'data/onet_occ_titles.txt', sep='\t')
+    # Reading the list of ONET occupation titles
+    onet_occ = pd.read_csv(occ_path, sep='\t')
 
-    onet_alt = pd.read_csv(folder_path+'data/onet_alt_titles.txt', sep='\t') \
-        .groupby(by='onet_code') \
-        .agg({'onet_title_alt': lambda x: x.astype(object)}) \
-        .reset_index()
+    # Reading the list of ONET alternate occupation titles
+    onet_alt = pd.read_csv(alt_path, sep='\t').groupby(by='onet_code')['onet_title_alt'].apply(list)
+    
+    # Reading the list of technologies associated with ONET occupations
+    onet_tech = pd.read_csv(tech_path, sep='\t').groupby(by='onet_code')['onet_tech'].apply(list)
 
-    onet_tech = pd.read_csv(folder_path+'data/onet_tech_skills.txt', sep='\t') \
-        .groupby(by='onet_code') \
-        .agg({'onet_tech': lambda x: x.astype(object)}) \
-        .reset_index()
-
+    # Compposing a single dataset with ONET codes, occupation titles, alternate titles, and technologies associated
     onet_data = pd.merge(left=onet_occ, right=onet_alt, how='left', on='onet_code')
 
     onet_data = pd.merge(
         left=onet_data, right=onet_tech, how='left', on='onet_code') \
         .fillna('')
-
-    onet_data.to_csv(onet_path, index=False)
 
     del onet_occ, onet_alt, onet_tech
 
@@ -55,16 +51,19 @@ def read_onet_data(folder_path, onet_path):
 
 # Reading the Evaluation Corpus
 
-def read_sample_data(data_path, tags_path):
+def compose_data_sample(data_path, tags_path):
+    '''Composes the data sample by combining the original Topjobs data with manually annotated tags'''
+
+    # Reading the original Topjobs dataset
     data_full = pd.read_excel(data_path)
 
-    image_path = folder_path+'data/sample/'
+    # Reading the manually annotated tags for the data sample
     sample_tags = pd.read_csv(tags_path)
 
-    sample_tags['image_drive_url'] = image_path + sample_tags['file_name']
-    sample_tags['job_code'] = sample_tags.file_name.replace(
-        to_replace='[^0-9]', value='', regex=True).astype(int)
-
+    # sample_tags['image_drive_url'] = image_path + sample_tags['file_name']
+    sample_tags['job_code'] = sample_tags.file_name.replace(to_replace='[^0-9]', value='', regex=True).astype(int)
+    
+    # Composing a single dataset by appending manually annotated tags to the Topjobs dataset
     sample = pd.merge(left=sample_tags, right=data_full, how='left', on='job_code')
     sample['tags'] = sample[['tag_1', 'tag_2', 'tag_3', 'tag_4', 'tag_5', 'tag_6', 'tag_7', 'tag_8', 'tag_9', 'tag_10']].values.tolist()
     sample = sample.drop(columns=['tag_1', 'tag_2', 'tag_3', 'tag_4', 'tag_5', 'tag_6', 'tag_7', 'tag_8', 'tag_9', 'tag_10'])
@@ -76,50 +75,73 @@ def read_sample_data(data_path, tags_path):
 # Cleaning Text
 
 def clean_text(text):
-  #replaces dashes with my chosen delimiter
-  nodash = re.sub('.(-+)', ',', text)
-  #strikes multiple periods
-  nodots = re.sub('.(\.\.+)', '', nodash)
-  #strikes linebreaks
-  nobreaks = re.sub('\n', ' ', nodots)
-  #strikes extra spaces
-  nospaces = re.sub('(  +)', ',', nobreaks)
-  #strikes *
-  nostar = re.sub('.[*]', '', nospaces)
-  #strikes new line and comma at the beginning of the line
-  flushleft = re.sub('^\W', '', nostar)
-  #getting rid of double commas (i.e. - Evarts)
-  comma = re.sub(',{2,3}', ',', flushleft)
-  #cleaning up some words that are stuck together (i.e. -  Dawes, Manderson)
-  return (comma)
+    '''Cleans text by removing dashes, multiple periods, linebreaks, multiple spaces, asterisks, new lines, leading commas, and double commas.'''
+    
+    # Replacing dashes with my chosen delimiter
+    nodash = re.sub('.(-+)', ',', text)
 
-# Getting the OCR Outputs
+    # Striking multiple periods
+    nodots = re.sub('.(\.\.+)', '', nodash)
 
-def get_ocr_output(ocr_path, sample):
+    # Striking linebreaks
+    nobreaks = re.sub('\n', ' ', nodots)
 
+    # Striking extra spaces
+    nospaces = re.sub('(  +)', ',', nobreaks)
+
+    # Striking *
+    nostar = re.sub('.[*]', '', nospaces)
+
+    # Striking new line and comma at the beginning of the line
+    flushleft = re.sub('^\W', '', nostar)
+
+    # Getting rid of double commas (i.e. - Evarts)
+    comma = re.sub(',{2,3}', ',', flushleft)
+
+    return (comma)
+
+# Appending the OCR Outputs to sample data
+
+def append_ocr_output(ocr_path, sample):
+    '''Appends the OCR output of images to the data sample'''
+
+    # Setting the topjobs id code as the index of the sample
     sample.set_index('job_code', drop=False)
 
+    # Reading the OCR outputs
     sample_ocr_output = pd.read_csv(ocr_path)
+
+    # Renaming the common index for consistency
     sample_ocr_output = sample_ocr_output.rename(columns={'job_id': 'job_code'})
+
+    # Dropping unnecessary columns
     sample_ocr_output = sample_ocr_output.drop(columns=['ocrd_text', 'plain_accuracy', 'clean_accuracy'])
+
+    # Composing a single dataset by appending OCR outputs to the sample
     sample = pd.merge(left=sample, right=sample_ocr_output, how='left', on='job_code')
+
+    # Cleaning and lowercasing the OCR output
     sample['tj_desc'] = [clean_text(text) for text in sample.ocr_output]
     sample['tj_desc'] = sample['tj_desc'].str.lower()
 
     return sample
 
-# Calculating Lockdown Status for Job Posting
+# Calculating the Lockdown Status for Job Posting
 
-def calculate_lockdown_status(sample):
+def calculate_lockdown_status(sample, lockdown_date_range):
+    '''Returns 1 if the start date of the job posting falls within the date range of lockdowns provided.
+    Returns 0 otherwise.'''
 
-    sample['lockdown_status'] = sample.start_date >= '2020-03-01'
+    sample['lockdown_status'] = (sample.start_date >= lockdown_date_range[0] and sample.start_date <= lockdown_date_range[1])
     sample.groupby(by=['lockdown_status']).size()
 
     return sample
 
-# Calculating Work From Home Status for Job Posting
+# Calculating whether the Job Posting Mentions Work From Home Opportunities
 
-def calculate_wfh_status(sample):
+def calculate_wfh_mention_status(sample):
+    '''Returns 1 if the job posting mentions the phrase work from home.
+    Returns 0 otherwise'''
 
     sample['wfh_status'] = np.where(sample['tj_desc'].str.contains('work from home'),1, 0)
 
@@ -127,10 +149,13 @@ def calculate_wfh_status(sample):
 
 # Renaming Relevant Columns, Adding Status Columns, and Removing Unnecessary Columns
 
-def prepare_sample(sample):
+def prepare_sample(sample, lockdown_date_range):
+    '''Prepares the sample for the task at hand by renaming relevant columns,
+    adding lockdown and Work From Home mention status,
+    and removing unneeded columns.'''
 
-    sample = calculate_lockdown_status(sample)
-    sample = calculate_wfh_status(sample)
+    sample = calculate_lockdown_status(sample, lockdown_date_range)
+    sample = calculate_wfh_mention_status(sample)
 
     sample = sample.rename(columns={'job_code': 'tj_code', 'job_title': 'tj_title', })
     sample = sample.drop(columns=['image_drive_url', 'job_description', 'remark', 'functional_area', 'expiry_date', 'image_string', 'image_source', 'image_code', 'image_url', 'start_date'])
@@ -140,7 +165,7 @@ def prepare_sample(sample):
 # Creating ONET Corpus
 
 def create_onet_corpus(onet_data):
-
+    '''Creates a combined corpus where each data item consists of the onet occupation titles and alternate titles associated with each job separated by spaces.'''
     onet_data['onet_family'] = onet_data['onet_code'].str.slice(stop=2)
     onet_corpus = onet_data.onet_title + ' ' + [' '.join(titles) for titles in onet_data.onet_title_alt]
 
@@ -148,18 +173,27 @@ def create_onet_corpus(onet_data):
 
     return onet_corpus
 
-# Fitting the tf-idf Vectorizer on the Reference Corpus
+# Tokenizing and stemming English text
 
-def nltk_tokenizer(text):
+def nltk_tokenizer_stemmer(text):
+    '''Tokenizes and stems the words in a given body of text.'''
 
+    # Dividing text into tokens
     tokens = [word for word in word_tokenize(text)]
+
+    # Stemming word tokens
     stems = [PorterStemmer().stem(word) for word in tokens]
 
     return stems
 
+# Fitting the tf-idf Vectorizer on the Reference Corpus
 def create_tf_idf_vector(onet_corpus):
+    '''Creates and trains a tf-idf vectorizer on the ONET corpus consisting of occupation titles and alternate titles.'''
+    
+    # Creating the vectorizer
+    tfidf_vect = TfidfVectorizer(tokenizer=nltk_tokenizer_stemmer, stop_words='english')
 
-    tfidf_vect = TfidfVectorizer(tokenizer=nltk_tokenizer, stop_words='english')
+    # Training the tf-idf vectorizer on the ONET corpus
     onet_tfidf = tfidf_vect.fit_transform(onet_corpus)
 
     return tfidf_vect, onet_tfidf
@@ -167,12 +201,15 @@ def create_tf_idf_vector(onet_corpus):
 # Vectorizing Titles and Descriptions Separately
 
 def vectorize_sample(sample, tfidf_vect):
+    '''Generates tf-idf vectors for the data sample.'''
 
+    # Generating tf-idf vectors for job titles of Topjpbs data
     sample_title = [unquote(str(title)) for title in sample.tj_title]
     sample_title = [re.sub('\+', ' ', title) for title in sample_title]
-    sample_desc = sample.tj_desc
-
     sample_tfidf_title = tfidf_vect.transform(sample_title)
+
+    # Generating tf-idf vectors for job descriptions of Topjpbs data extracted from images using OCR
+    sample_desc = sample.tj_desc
     sample_tfidf_desc = tfidf_vect.transform(sample_desc)
 
     return sample_tfidf_title, sample_tfidf_desc
@@ -181,20 +218,28 @@ def vectorize_sample(sample, tfidf_vect):
 
 # Calculating Cosine Similarity with Different Weights
 def calculate_cosine_similarity(onet_tfidf, sample_tfidf_title, sample_tfidf_desc):
+    '''Calculates the cosine similarity between each of the ONET occupations and each of the Topjobs vacancy posting.
+    Considers occupation title and alternative titles for ONET occupations.
+    Considers job title and job description for Topjobs data.'''
 
     wl_title = 0.6
     we_title = 1
     wl_desc = 1-wl_title
     we_desc = 1
 
+    # Calculating similarity between each entry in the ONET corpus and Topjobs job titles
     sample_title = linear_kernel(sample_tfidf_title, onet_tfidf)
+
+    # Calculating similarity between each entry in the ONET corpus and Topjobs job descriptions
     sample_desc = linear_kernel(sample_tfidf_desc, onet_tfidf)
+
+    # Calculating the combined similarity value for each Topjobs posting
     sample_comb = pd.DataFrame(
         data=(sample_title**we_title)*wl_title + (sample_desc**we_desc)*wl_desc,
         columns=onet_data.onet_code,#onet_data.onet_family.unique(),
         index=sample.tj_code)
 
-    sample_comb.to_csv(folder_path+'data/outputs/sample_comb.csv', index=False)
+    # sample_comb.to_csv(folder_path+'data/outputs/sample_comb.csv', index=False)
 
     del wl_title, we_title, wl_desc, we_desc
 
@@ -203,9 +248,12 @@ def calculate_cosine_similarity(onet_tfidf, sample_tfidf_title, sample_tfidf_des
 # Matching ONET Categories to Job Postings
 
 def get_onet_matches(sample):
+    '''Combines the Topjobs data sample with details of the ONET occupation matched to each vacancy posting via tf-idf.'''
 
+    # Creating new dataframe
     matches = pd.DataFrame(index=sample.tj_code)
 
+    # Adding the ONET occupation code and family code of the matched occupation to each Topjobs posting
     for job in sample.tj_code:
         code = sample_comb.loc[job, sample_comb.columns].idxmax() #.str.startswith(family)].idxmax()
         family = code[0:2]
@@ -215,9 +263,11 @@ def get_onet_matches(sample):
     matches = matches.reset_index()
     matches = matches[matches['onet_family'].notna()]
 
+    # Composing a single dataset by appending useful data from the Topjobs dataset to matches dataset
     matches = pd.merge(left=matches, right=sample[['tj_code', 'tj_title', 'tj_desc', 'tags', 'lockdown_status', 'wfh_status']], on='tj_code')
     matches = pd.merge(left=matches, right=onet_data[['onet_code', 'onet_title', 'onet_desc']], on='onet_code')
 
+    # Cleaning the title column
     matches.tj_title = [unquote(str(title)) for title in matches.tj_title]
     matches.tj_title = [re.sub('\+', ' ', title) for title in matches.tj_title]
 
@@ -229,6 +279,7 @@ def get_onet_matches(sample):
 # Evaluating Matches
 
 def evaluate_matches(matches):
+    '''Evaluates the performance of the tf-idf vectorizer by generating a confusion matrix between manually anotated ONET categories and those annotated via tf-idf.'''
 
     for job in matches.tj_code:
         tags = matches.at[job,'tags']
@@ -244,26 +295,49 @@ def evaluate_matches(matches):
 
     matches.to_csv(folder_path+'data/outputs/sample_matches.csv', index=False)
 
+    # Generating the confusion matrix
     confusion_matrix = pd.crosstab(matches.first_tag_family, matches.onet_family, rownames=['Actual'], colnames=['Predicted'])
     print (confusion_matrix)
 
+    # Generating the heatmap for the confusion matrix
     sn.heatmap(confusion_matrix, annot=True)
     plt.show()
 
     return confusion_matrix
 
 ################################################
+
+# Path to the folder where project data is saved
+folder_path = '/content/drive/MyDrive/LIRNEasia/ADB Project/'
+
+# Path to the full Topjobs dataset
 data_path = folder_path+'data/data_full.xlsx'
-onet_path = folder_path+'data/outputs/onet_data.csv'
+
+# Path to the dataset of ONET occupation titles
+occ_path = folder_path + 'data/onet_occ_titles.txt'
+
+# Path to the dataset of ONET alternate occupation titles
+alt_path = folder_path+'data/onet_alt_titles.txt'
+
+# Path to the dataset of technologies associated with ONET occupations
+tech_path = folder_path+'data/onet_tech_skills.txt'
+
+# Path to the dataset of manually annotated tags for the Topjobs data sample
 tags_path = folder_path+'data/cs_sample_tags.csv'
 
+# image_path = folder_path+'data/sample/'
+
+# Path to the OCR outputs for the Topjobs data sample
 ocr_path = folder_path+'data/outputs/cs_sample_ocr_output.csv'
 
-onet_data = read_onet_data(folder_path, onet_path)
+# Date range during which lockdown was implemented (ASSUMPTION: All dates beyond 2020-03-01 are considered to be under lockdown)
+lockdown_date_range = ['2020-03-01', '9999-12-31']
 
-sample = read_sample_data(data_path, tags_path)
-sample = get_ocr_output(ocr_path, sample)
-sample = prepare_sample(sample)
+onet_data = read_onet_data(occ_path, alt_path, tech_path)
+
+sample = compose_data_sample(data_path, tags_path)
+sample = append_ocr_output(ocr_path, sample)
+sample = prepare_sample(sample,lockdown_date_range)
 
 onet_corpus = create_onet_corpus(onet_data)
 tfidf_vect, onet_tfidf = create_tf_idf_vector(onet_corpus)
