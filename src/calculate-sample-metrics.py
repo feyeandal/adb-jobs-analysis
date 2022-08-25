@@ -333,17 +333,23 @@ ocr_path = folder_path+'data/outputs/cs_sample_ocr_output.csv'
 # Date range during which lockdown was implemented (ASSUMPTION: All dates beyond 2020-03-01 are considered to be under lockdown)
 lockdown_date_range = ['2020-03-01', '9999-12-31']
 
-onet_data = read_onet_data(occ_path, alt_path, tech_path)
+# Main Function
+def main():
+    onet_data = read_onet_data(occ_path, alt_path, tech_path)
 
-sample = compose_data_sample(data_path, tags_path)
-sample = append_ocr_output(ocr_path, sample)
-sample = prepare_sample(sample,lockdown_date_range)
+    sample = compose_data_sample(data_path, tags_path)
+    sample = append_ocr_output(ocr_path, sample)
+    sample = prepare_sample(sample,lockdown_date_range)
 
-onet_corpus = create_onet_corpus(onet_data)
-tfidf_vect, onet_tfidf = create_tf_idf_vector(onet_corpus)
+    onet_corpus = create_onet_corpus(onet_data)
+    tfidf_vect, onet_tfidf = create_tf_idf_vector(onet_corpus)
 
-sample_tfidf_title, sample_tfidf_desc = vectorize_sample(sample, tfidf_vect)
-sample_comb = calculate_cosine_similarity(onet_tfidf, sample_tfidf_title, sample_tfidf_desc)
+    sample_tfidf_title, sample_tfidf_desc = vectorize_sample(sample, tfidf_vect)
+    sample_comb = calculate_cosine_similarity(onet_tfidf, sample_tfidf_title, sample_tfidf_desc)
 
-matches = get_onet_matches(sample)
-confusion_matrix = evaluate_matches(matches)
+    matches = get_onet_matches(sample)
+    confusion_matrix = evaluate_matches(matches)
+    return (confusion_matrix)
+
+if __name__ == '__main__':
+    main()
