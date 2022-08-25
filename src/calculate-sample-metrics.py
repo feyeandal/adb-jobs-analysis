@@ -72,34 +72,6 @@ def compose_data_sample(data_path, tags_path):
 
     return sample
 
-# Cleaning Text
-
-def clean_text(text):
-    '''Cleans text by removing dashes, multiple periods, linebreaks, multiple spaces, asterisks, new lines, leading commas, and double commas.'''
-    
-    # Replacing dashes with my chosen delimiter
-    nodash = re.sub('.(-+)', ',', text)
-
-    # Striking multiple periods
-    nodots = re.sub('.(\.\.+)', '', nodash)
-
-    # Striking linebreaks
-    nobreaks = re.sub('\n', ' ', nodots)
-
-    # Striking extra spaces
-    nospaces = re.sub('(  +)', ',', nobreaks)
-
-    # Striking *
-    nostar = re.sub('.[*]', '', nospaces)
-
-    # Striking new line and comma at the beginning of the line
-    flushleft = re.sub('^\W', '', nostar)
-
-    # Getting rid of double commas (i.e. - Evarts)
-    comma = re.sub(',{2,3}', ',', flushleft)
-
-    return (comma)
-
 # Appending the OCR Outputs to sample data
 
 def append_ocr_output(ocr_path, sample):
@@ -120,9 +92,8 @@ def append_ocr_output(ocr_path, sample):
     # Composing a single dataset by appending OCR outputs to the sample
     sample = pd.merge(left=sample, right=sample_ocr_output, how='left', on='job_code')
 
-    # Cleaning and lowercasing the OCR output
-    sample['tj_desc'] = [clean_text(text) for text in sample.ocr_output]
-    sample['tj_desc'] = sample['tj_desc'].str.lower()
+    # Lowercasing the OCR output
+    sample['tj_desc'] = sample['ocr_output'].str.lower()
 
     return sample
 
@@ -132,7 +103,9 @@ def calculate_lockdown_status(sample, lockdown_date_range):
     '''Returns 1 if the start date of the job posting falls within the date range of lockdowns provided.
     Returns 0 otherwise.'''
 
-    sample['lockdown_status'] = (sample.start_date >= lockdown_date_range[0] and sample.start_date <= lockdown_date_range[1])
+    lockdown_lowerbound = lockdown_date_range[0] <= sample.start_date
+    lockdown_upperbound = sample.start_date <= lockdown_date_range[1]
+    sample['lockdown_status'] = (lockdown_lowerbound & lockdown_upperbound)
     sample.groupby(by=['lockdown_status']).size()
 
     return sample
@@ -331,7 +304,7 @@ tags_path = folder_path+'data/cs_sample_tags.csv'
 ocr_path = folder_path+'data/outputs/cs_sample_ocr_output.csv'
 
 # Date range during which lockdown was implemented (ASSUMPTION: All dates beyond 2020-03-01 are considered to be under lockdown)
-lockdown_date_range = ['2020-03-01', '9999-12-31']
+lockdown_date_range = ['2020-03-01', '2022-12-31']
 
 # Main Function
 def main():
@@ -339,7 +312,7 @@ def main():
 
     sample = compose_data_sample(data_path, tags_path)
     sample = append_ocr_output(ocr_path, sample)
-    sample = prepare_sample(sample,lockdown_date_range)
+    sample = prepare_sample(sample, lockdown_date_range)
 
     onet_corpus = create_onet_corpus(onet_data)
     tfidf_vect, onet_tfidf = create_tf_idf_vector(onet_corpus)
