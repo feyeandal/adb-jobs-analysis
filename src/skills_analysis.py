@@ -10,7 +10,6 @@ import gensim.corpora as corpora
 from gensim.utils import simple_preprocess
 from gensim.models import CoherenceModel
 
-
 file_path = "E:/ADB_Project/code/data/pipeline_sample.csv"
 nlp = spacy.load('en_core_web_sm', disable=['parser', 'ner'])
 
