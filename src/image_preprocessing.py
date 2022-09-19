@@ -22,15 +22,17 @@ def noise_removal(image): #feed im_bw
     image = cv2.medianBlur(image, 3)
     return (image)
 
-def thin_font(image): #eroded_image = thin_font(img)
+def thin_font(image):
+    """makes bold fonts thinner - known as erosion"""
     import numpy as np
     image = cv2.bitwise_not(image)
     kernel = np.ones((2,2),np.uint8)
     image = cv2.erode(image, kernel, iterations=1)
     image = cv2.bitwise_not(image)
-    return (image)
+    return image
 
- def thick_font(image): #dilated_image = thick_font(img)
+def thick_font(image):
+    """makes faint fonts bolder - known as dilation"""
     import numpy as np
     image = cv2.bitwise_not(image)
     kernel = np.ones((2,2),np.uint8)
@@ -38,7 +40,7 @@ def thin_font(image): #eroded_image = thin_font(img)
     image = cv2.bitwise_not(image)
     return (image)
 
- def remove_borders(image): #no_borders = remove_borders(no_noise)
+def remove_borders(image): #no_borders = remove_borders(no_noise)
     contours, heiarchy = cv2.findContours(image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     cntsSorted = sorted(contours, key=lambda x:cv2.contourArea(x))
     cnt = cntsSorted[-1]
