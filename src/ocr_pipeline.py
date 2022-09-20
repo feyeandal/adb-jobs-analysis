@@ -5,7 +5,7 @@ import ocr_evaluation
  
  #change the declaration location 
 
-def main(read_path = "D:/nlp/top_jobs_cs_20_21/part_1/part_1b", save_path = "D:/nlp/top_jobs_cs_20_21/part_1/part_1b/p1b.csv"):
+def main(read_path, save_path):
     """ reads images from a directory and saves final ocr output to a csv"""
     #uses the ocr_extraction sub-module to conduct initial OCR and build a dataframe
     text = ocr_extraction.extract_bulk(read_path)
@@ -25,6 +25,8 @@ def main(read_path = "D:/nlp/top_jobs_cs_20_21/part_1/part_1b", save_path = "D:/
 
     #save the final dataframe to a csv
     ocr_df.to_csv(save_path, index=False)
+    
+    return (ocr_df)
 
 
 if __name__ == "__main__":
