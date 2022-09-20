@@ -40,7 +40,7 @@ def thick_font(image):
     image = cv2.bitwise_not(image)
     return (image)
 
-def remove_borders(image): #no_borders = remove_borders(no_noise)
+def remove_borders(image):
     contours, heiarchy = cv2.findContours(image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     cntsSorted = sorted(contours, key=lambda x:cv2.contourArea(x))
     cnt = cntsSorted[-1]
