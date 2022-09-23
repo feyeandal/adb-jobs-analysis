@@ -8,7 +8,7 @@ import gensim.corpora as corpora
 from gensim.utils import simple_preprocess
 from gensim.models import CoherenceModel
 
-# Download stopwords and spa
+# Download stopwords and spacy model
 nltk.download('stopwords')
 nlp = spacy.load('en_core_web_sm', disable=['parser', 'ner'])
 
@@ -31,7 +31,7 @@ def make_bigrams(tokens):
     return [bigram_mod[doc] for doc in tokens]
 
 def lemmatization(tokens, allowed_postags=["NOUN", "ADJ", "VERB", "ADV"]):
-    """https://spacy.io/api/annotation"""
+    """Do lemmatization keeping only noun, adj, vb, adv"""
     texts_out = []
     for sent in tokens:
         doc = nlp(" ".join(sent)) 
@@ -39,7 +39,7 @@ def lemmatization(tokens, allowed_postags=["NOUN", "ADJ", "VERB", "ADV"]):
     return texts_out
 
 def prep_data(df):
-    """build the bi-gram models"""
+    """tokenize, remove stopwords, make bigrams and lemmatize the corpus"""
 
     tokens = list(sent_to_words(list(df["clean_text"])))
     
@@ -51,23 +51,20 @@ def prep_data(df):
     
     return tokens_lemmatized
     
-def build_topic_models(tokens_lemmatized):
-    """topic models"""
+def build_topic_models(tokens):
+    """train a topic models"""
     #Create data formats necessary to build LDA topic models with gensim
     
     #Create dictionary
-    id2word = corpora.Dictionary(tokens_lemmatized)
-    
-    # Create Corpus
-    texts = tokens_lemmatized
+    id2word = corpora.Dictionary(tokens)
 
-    # Term Document Frequency
-    corpus = [id2word.doc2bow(text) for text in texts]
+    # Term Document Frequency from dictionary
+    corpus = [id2word.doc2bow(token) for token in tokens]
     
     # Build LDA model
     lda_model = gensim.models.ldamodel.LdaModel(corpus=corpus,
                                            id2word=id2word,
-                                           num_topics=5, 
+                                           num_topics=4, 
                                            random_state=100,
                                            update_every=10,
                                            chunksize=100,
@@ -78,15 +75,19 @@ def build_topic_models(tokens_lemmatized):
     return lda_model
     
     
-def main(file_path = "E:/ADB_Project/code/data/pipeline_sample.csv"):
+def main(file_path = "D:/nlp/top_jobs_cs_20_21/part_1/part_1a/p1a.csv"):
+    """reads a csv, prepares the data, builds the topic models and prints topic outputs"""
     
     df = pd.read_csv(file_path)
+    
+    df = df[df["clean_accuracy"]>0]
+    
+    df = df.sample(200)
     
     tokens_lemmatized = prep_data(df)
     
     lda_model = build_topic_models(tokens_lemmatized)
     
-    #Print the Keyword in the 20 topics
     pprint(lda_model.print_topics())
     
 if __name__ == "__main__":
