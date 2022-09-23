@@ -6,8 +6,8 @@ import math
 # https://www.youtube.com/watch?v=ADV-AjAXHdc&t=1698s
 # 
         
-def isLightOrDark(rgbColor=[0,128,255]):
-    """checks whether the image is light or dark"""
+def isLightOrDark(rgbColor):
+    """checks whether a given pixel is light or dark"""
     [r,g,b] = rgbColor
     hsp = math.sqrt(0.299 * (r * r) + 0.587 * (g * g) + 0.114 * (b * b))
     if (hsp>127.5):
@@ -33,6 +33,8 @@ def binarization(image_path):
             else:
                 pixelsNew[i,j] = (254,254,254)
     return img
+
+
    
     
     

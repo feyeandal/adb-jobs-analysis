@@ -8,20 +8,32 @@ from pathlib import Path
 
 pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract'
 
-def extract_text(path, n=3):
-    """ returns a list containing OCR'd text from a given directory"""
-    
-    indexes = []
+def extract_text(image_path):
+    """ extracts text for a single image"""
+    return pytesseract.image_to_string(image_path)
+
+def extract_bulk(path):
+    """extract texts from all images in a directory and returns a dictionary of image id, filepath and ocr output"""
+    filepaths = []
+    vacancies = []
     image2text = []
+    tesseract_failures = []
     
-    for vacancy in os.listdir(path)[:n]:
-        indexes.append(vacancy)
-        text = pytesseract.image_to_string(f"{path}/{vacancy}")
-        image2text.append(text)
+    for vacancy in os.listdir(path):
+        try:
+            filepaths.append(f"{path}/{vacancy}")
+            vacancies.append(vacancy.split(".")[0])
+            text = extract_text(f"{path}/{vacancy}")
+            image2text.append(text)
+        except:
+            tesseract_failures.append(vacancy)
+            print(f"Tesseract Failure: {vacancy}")    
         
     ocrd = {
-        "job_id": indexes,
+        "vacancy_id": vacancies,
+        "file_path": filepaths,
         "ocrd_text": image2text
+        
     }
 
     return ocrd

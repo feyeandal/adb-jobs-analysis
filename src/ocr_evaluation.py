@@ -1,15 +1,11 @@
 import os
 import numpy as np
 import pandas as pd
-import pytesseract
 import enchant
-
 import ocr_extraction
-import preprocess_images
+import image_preprocessing
 
-pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract'
-
-path = "E:/ADB_Project/code/data/cs_sample"
+PATH = "E:/ADB_Project/code/data/cs_sample"
 
 # -------------------------------------------------------------------------------------------
 
@@ -35,12 +31,12 @@ def strip_special_chars(text, schar_list, char_keep):
     char_set = set([c for c in schar_list if c not in char_keep])
     
     # i2t_stripped -> stripped of special chars
-    text_stripped = [''.join([c for c in item if c not in char_set]) for item in text]
+    text_stripped = ' '.join(''.join([c for c in item if c not in char_set]) for item in text.split())
     
     return text_stripped
 
 
-def accuracy_calculator(string):
+def calculate_accuracy(string):
     """Checks a list of words against a dictionary and returns a ratio of valid words"""
     
     dic = enchant.Dict("en_US")
@@ -51,46 +47,35 @@ def accuracy_calculator(string):
         if dic.check(word) == True:
             valid_count += 1
             
-    return (valid_count/len(string.split()))
+    return (valid_count/max(1, len(string.split()))) #TO DO - LATER
 
 # ----------------------------------------------------------------------------------------------
+def strip_additional_characters(ocr_list): #TO DO  - CONSOLIDATE FUNCTION
+    """handles the stripping of non alpha-numeric characters for a list of strings"""
+    # execute the function on the i2t list to get a list of special characters
+    special = get_special_chars(ocr_list)
 
-text = ocr.extract_text(path, n=10)
-df = pd.DataFrame(text, index=np.arange(10))
+    # define characters you want to retain
+    char_keep = [' ', '#', '+', '\n', '/']
 
-i2t = list(df["ocrd_text"])
+    # execute the function and obtain ocr output stripped of special characters
+    stripped = strip_special_chars(ocr_list, special, char_keep)
 
-# execute the function on the i2t list to get a list of special characters
-special = get_special_chars(i2t)
+    return stripped
 
-# define characters you want to retain
-char_keep = [' ', '#', '+', '\n', '/']
+def update_ocr(df, threshold=0.85):
+    """
+    #for OCR accuracy values below a threshold, preprocess images to improve ocr and calculate accuracy metrics
+    """
+    
+    df['ocrd_text'] = df.apply(lambda x: ocr_extraction.extract_text(image_preprocessing.binarization(x['file_path'])) if (x['clean_accuracy'] < threshold) else x['ocrd_text'], axis=1)
+    df['clean_text'] = df.apply(lambda x: strip_additional_characters(x['ocrd_text']) if (x['clean_accuracy'] < threshold) else x['clean_text'], axis=1)
+    df['plain_accuracy'] = df.apply(lambda x: calculate_accuracy(x['ocrd_text']) if (x['clean_accuracy'] < threshold) else x['plain_accuracy'], axis=1)
+    df['clean_accuracy'] = df.apply(lambda x: calculate_accuracy(x['clean_text']) if (x['clean_accuracy'] < threshold) else x['clean_accuracy'], axis=1)
 
-# execute the function and obtain ocr output stripped of special characters
-stripped = strip_special_chars(i2t, special, char_keep)
+    return df
 
-df["clean"] = pd.Series(stripped)
-#accuracy calculation
-df["plain_accuracy"] = df["ocrd_text"].apply(accuracy_calculator)
-df["clean_accuracy"] = df["clean"].apply(accuracy_calculator)
-
-
-for index in df.index:
-    if df.loc[index,'clean_accuracy'] < 0.9:
-        vacancy = df.loc[index, 'job_id']
-        binarized =  preprocess_images.binarization(os.path.join(path, vacancy))
-        df.loc[index, 'ocrd_text'] = pytesseract.image_to_string(binarized)
-        special = get_special_chars([df.loc[index, 'ocrd_text']])
-        df.loc[index, 'clean'] = strip_special_chars([df.loc[index, 'ocrd_text']], special, char_keep)[0]
-        df.loc[index, 'plain_accuracy'] = accuracy_calculator(df.loc[index, 'ocrd_text'])
-        df.loc[index, 'clean_accuracy'] = accuracy_calculator(df.loc[index, 'clean'])
-        
-# ----------------------------------------------------------------------------------------------
-
-save_path = "E:/ADB_Project/code/data/pipeline_sample.csv"
-
-df.to_csv(save_path, index=False)
-
+    
 
 
 
