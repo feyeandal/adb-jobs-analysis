@@ -7,7 +7,7 @@ def inversion(img):
     return cv2.bitwise_not(img)
 
 def grayscale(img): #binarization_1
-    return cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    return cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
 def blackwhite(gray_image): #binarization_2
     thresh, im_bw = cv2.threshold(gray_image, 210, 230, cv2.THRESH_BINARY)
