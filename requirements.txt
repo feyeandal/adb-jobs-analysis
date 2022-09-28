@@ -5,7 +5,7 @@ pandas
 ipython
 jupyterlab
 Pillow
-opencv-python
+opencv-contrib-python
 pytesseract
 pathlib
 pyenchant

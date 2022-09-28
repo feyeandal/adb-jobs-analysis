@@ -47,19 +47,37 @@ def is_dark(image):
         return False
 
 def inversion(img):
+    """
+    if an image has light text on dark background,
+    inverts to get dark text on light background
+    """
     if is_dark(img):
         return cv2.bitwise_not(img)
     else:
         return img
 
+def super_res(img, path="/mnt/e/ADB_Project/github/adb-jobs-analysis/models/ESPCN_x3.pb"):
+    """increase the image resolution using OpenCV's ESPCN deep learning model"""
+    
+    #Load the Lapsrn model
+    sr = cv2.dnn_superres.DnnSuperResImpl_create()
+    sr.readModel(path)
+    sr.setModel("espcn", 3)
+
+    #upsample and return the image
+    return sr.upsample(lwr1)
+
 def grayscale(img): #binarization_1
+    """grayscaling images"""
     return cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
 def blackwhite(gray_image): #binarization_2
+    """making images black and white"""
     thresh, im_bw = cv2.threshold(gray_image, 210, 230, cv2.THRESH_BINARY)
     return im_bw
     
-def noise_removal(image): #feed im_bw
+def noise_removal(image): #feed im_bw"
+    """removes image noise"""
     kernel = np.ones((1, 1), np.uint8)
     image = cv2.dilate(image, kernel, iterations=1)
     kernel = np.ones((1, 1), np.uint8)
@@ -87,6 +105,7 @@ def thick_font(image):
     return (image)
 
 def remove_borders(image):
+    """removes borders from images"""
     contours, heiarchy = cv2.findContours(image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     cntsSorted = sorted(contours, key=lambda x:cv2.contourArea(x))
     cnt = cntsSorted[-1]
@@ -95,15 +114,33 @@ def remove_borders(image):
     return (crop)
 
 def add_borders(image):
+    """expands the edges, incase the letters start too close to the edge"""
     color = [255, 255, 255]
-    top, bottom, left, right = [150]*4
+    top, bottom, left, right = [250]*4
     return cv2.copyMakeBorder(image, top, bottom, left, right, cv2.BORDER_CONSTANT, value=color)
 
+def main(img):
+    """sequences the image preprocessing steps into a processing chain"""
+    
+    #invert
+    inverted = inversion(img)
 
+    #binarized
+    binarized = blackwhite(inverted)
+
+    #upscaled
+    upscaled = super_res(binarized)
+
+    #erosion
+    eroded = thick_font(upscaled)
+
+    #add_borders
+    bordered = add_borders(eroded)
+
+    return bordered
    
-    
-    
-    
+if __name__ == "__main__":
+    main()
   
     
     

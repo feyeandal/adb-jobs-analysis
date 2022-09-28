@@ -68,7 +68,7 @@ def update_ocr(df, threshold=0.85):
     #for OCR accuracy values below a threshold, preprocess images to improve ocr and calculate accuracy metrics
     """
     
-    df['ocrd_text'] = df.apply(lambda x: ocr_extraction.extract_text(image_preprocessing.binarization(x['file_path'])) if (x['clean_accuracy'] < threshold) else x['ocrd_text'], axis=1)
+    df['ocrd_text'] = df.apply(lambda x: ocr_extraction.extract_text(image_preprocessing(x['file_path'])) if (x['clean_accuracy'] < threshold) else x['ocrd_text'], axis=1)
     df['clean_text'] = df.apply(lambda x: strip_additional_characters(x['ocrd_text']) if (x['clean_accuracy'] < threshold) else x['clean_text'], axis=1)
     df['plain_accuracy'] = df.apply(lambda x: calculate_accuracy(x['ocrd_text']) if (x['clean_accuracy'] < threshold) else x['plain_accuracy'], axis=1)
     df['clean_accuracy'] = df.apply(lambda x: calculate_accuracy(x['clean_text']) if (x['clean_accuracy'] < threshold) else x['clean_accuracy'], axis=1)
