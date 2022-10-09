@@ -5,12 +5,11 @@ import enchant
 import ocr_extraction
 import image_preprocessing
 
-PATH = "E:/ADB_Project/code/data/cs_sample"
+PATH = "E:/ADB_Project/code/data/cs_sample" # the directory where image files are stored
 
 # -------------------------------------------------------------------------------------------
 
 def get_special_chars(text_column):
-    
     """"identify special characters that need to be removed before evaluation"""
     
     #converting to a single string
@@ -25,9 +24,8 @@ def get_special_chars(text_column):
     return text_char_sp
 
 def strip_special_chars(text, schar_list, char_keep):
-    
     """Strips the unwanted special characters from a given list of job descriptions"""
-    
+
     char_set = set([c for c in schar_list if c not in char_keep])
     
     # i2t_stripped -> stripped of special chars
@@ -75,7 +73,26 @@ def update_ocr(df, threshold=0.85):
 
     return df
 
-    
+def main(df):
+    """executes the ocr evaluation process"""
+
+    # strips the ocrd text of additional characters
+    df["clean_text"] = df["ocrd_text"].apply(strip_additional_characters)
+
+    # calculates accuracy on the OCR output column
+    df["plain_accuracy"] = df["ocrd_text"].apply(calculate_accuracy)
+
+    # calculates accuracy on the OCR output stripped of additional characters
+    df["clean_accuracy"] = df["clean_text"].apply(calculate_accuracy)
+
+    # repeat the above 3 steps for images which fall below a threshold accuracy
+    df = update_ocr(df)
+
+    return df
+
+if __name__ == "__main__":
+    main()
+
 
 
 
