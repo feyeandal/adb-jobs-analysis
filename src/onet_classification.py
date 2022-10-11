@@ -15,7 +15,7 @@ from gensim.models.keyedvectors import KeyedVectors
 from keras import backend as K
 from keras.constraints import maxnorm
 from keras.models import Sequential,Model,load_model
-from keras.preprocessing.sequence import pad_sequences
+# from keras.preprocessing.sequence import pad_sequences
 from keras.preprocessing.text import Tokenizer
 from nltk.stem import PorterStemmer
 from nltk.tokenize import word_tokenize
@@ -84,16 +84,16 @@ def append_ocr_output(ocr_path, sample):
     sample_ocr_output = pd.read_csv(ocr_path)
 
     # Renaming the common index for consistency
-    sample_ocr_output = sample_ocr_output.rename(columns={'job_id': 'job_code'})
-
-    # Dropping unnecessary columns
-    sample_ocr_output = sample_ocr_output.drop(columns=['ocrd_text', 'plain_accuracy', 'clean_accuracy'])
+    sample_ocr_output = sample_ocr_output.rename(columns={'vacancy_id': 'job_code'})
 
     # Composing a single dataset by appending OCR outputs to the sample
     sample = pd.merge(left=sample, right=sample_ocr_output, how='left', on='job_code')
 
     # Lowercasing the OCR output
-    sample['tj_desc'] = sample['ocr_output'].str.lower()
+    sample['tj_desc'] = sample['clean_text'].str.lower()
+
+    # Dropping unnecessary columns
+    sample_ocr_output = sample_ocr_output.drop(columns=['ocrd_text', 'plain_accuracy', 'clean_accuracy'])
 
     return sample
 
@@ -131,18 +131,18 @@ def prepare_sample(sample, lockdown_date_range):
     sample = calculate_wfh_mention_status(sample)
 
     sample = sample.rename(columns={'job_code': 'tj_code', 'job_title': 'tj_title', })
-    sample = sample.drop(columns=['image_drive_url', 'job_description', 'remark', 'functional_area', 'expiry_date', 'image_string', 'image_source', 'image_code', 'image_url', 'start_date'])
+    sample = sample.drop(columns=['job_description', 'remark', 'functional_area', 'expiry_date', 'image_string', 'image_source', 'image_code', 'image_url', 'start_date'])
     
     return sample
 
 # Creating ONET Corpus
 
-def create_onet_corpus(onet_data):
+def create_onet_corpus(onet_data, onet_corpus_path):
     '''Creates a combined corpus where each data item consists of the onet occupation titles and alternate titles associated with each job separated by spaces.'''
     onet_data['onet_family'] = onet_data['onet_code'].str.slice(stop=2)
     onet_corpus = onet_data.onet_title + ' ' + [' '.join(titles) for titles in onet_data.onet_title_alt]
 
-    onet_corpus.to_csv(folder_path+'data/outputs/onet_corpus.csv', index=False)
+    onet_corpus.to_csv(onet_corpus_path, index=False)
 
     return onet_corpus
 
@@ -190,7 +190,7 @@ def vectorize_sample(sample, tfidf_vect):
 # Transforming the Sample
 
 # Calculating Cosine Similarity with Different Weights
-def calculate_cosine_similarity(onet_tfidf, sample_tfidf_title, sample_tfidf_desc):
+def calculate_cosine_similarity(onet_tfidf, sample_tfidf_title, sample_tfidf_desc, onet_data, sample):
     '''Calculates the cosine similarity between each of the ONET occupations and each of the Topjobs vacancy posting.
     Considers occupation title and alternative titles for ONET occupations.
     Considers job title and job description for Topjobs data.'''
@@ -220,7 +220,7 @@ def calculate_cosine_similarity(onet_tfidf, sample_tfidf_title, sample_tfidf_des
 
 # Matching ONET Categories to Job Postings
 
-def get_onet_matches(sample):
+def get_onet_matches(sample, sample_comb, onet_data):
     '''Combines the Topjobs data sample with details of the ONET occupation matched to each vacancy posting via tf-idf.'''
 
     # Creating new dataframe
@@ -251,7 +251,7 @@ def get_onet_matches(sample):
 
 # Evaluating Matches
 
-def evaluate_matches(matches):
+def evaluate_matches(matches, matches_path):
     '''Evaluates the performance of the tf-idf vectorizer by generating a confusion matrix between manually anotated ONET categories and those annotated via tf-idf.'''
 
     for job in matches.tj_code:
@@ -266,7 +266,7 @@ def evaluate_matches(matches):
 
     # matches.groupby(['wfh_status', 'lockdown_status']).size()
 
-    matches.to_csv(folder_path+'data/outputs/sample_matches.csv', index=False)
+    matches.to_csv(matches_path, index=False)
 
     # Generating the confusion matrix
     confusion_matrix = pd.crosstab(matches.first_tag_family, matches.onet_family, rownames=['Actual'], colnames=['Predicted'])
@@ -280,49 +280,23 @@ def evaluate_matches(matches):
 
 ################################################
 
-# Path to the folder where project data is saved
-folder_path = '/content/drive/MyDrive/LIRNEasia/ADB Project/'
-
-# Path to the full Topjobs dataset
-data_path = folder_path+'data/data_full.xlsx'
-
-# Path to the dataset of ONET occupation titles
-occ_path = folder_path + 'data/onet_occ_titles.txt'
-
-# Path to the dataset of ONET alternate occupation titles
-alt_path = folder_path+'data/onet_alt_titles.txt'
-
-# Path to the dataset of technologies associated with ONET occupations
-tech_path = folder_path+'data/onet_tech_skills.txt'
-
-# Path to the dataset of manually annotated tags for the Topjobs data sample
-tags_path = folder_path+'data/cs_sample_tags.csv'
-
-# image_path = folder_path+'data/sample/'
-
-# Path to the OCR outputs for the Topjobs data sample
-ocr_path = folder_path+'data/outputs/cs_sample_ocr_output.csv'
-
-# Date range during which lockdown was implemented (ASSUMPTION: All dates beyond 2020-03-01 are considered to be under lockdown)
-lockdown_date_range = ['2020-03-01', '2022-12-31']
-
 # Main Function
-def main():
+def main(data_path, occ_path, alt_path, tech_path, tags_path, ocr_output_path, lockdown_date_range, onet_corpus_path, matches_path):
     onet_data = read_onet_data(occ_path, alt_path, tech_path)
 
     sample = compose_data_sample(data_path, tags_path)
-    sample = append_ocr_output(ocr_path, sample)
+    sample = append_ocr_output(ocr_output_path, sample)
     sample = prepare_sample(sample, lockdown_date_range)
 
-    onet_corpus = create_onet_corpus(onet_data)
+    onet_corpus = create_onet_corpus(onet_data, onet_corpus_path)
     tfidf_vect, onet_tfidf = create_tf_idf_vector(onet_corpus)
 
     sample_tfidf_title, sample_tfidf_desc = vectorize_sample(sample, tfidf_vect)
-    sample_comb = calculate_cosine_similarity(onet_tfidf, sample_tfidf_title, sample_tfidf_desc)
+    sample_comb = calculate_cosine_similarity(onet_tfidf, sample_tfidf_title, sample_tfidf_desc, onet_data, sample)
 
-    matches = get_onet_matches(sample)
-    confusion_matrix = evaluate_matches(matches)
-    return (confusion_matrix)
+    matches = get_onet_matches(sample, sample_comb, onet_data)
+    confusion_matrix = evaluate_matches(matches, matches_path)
+    return (matches)
 
 if __name__ == '__main__':
     main()
