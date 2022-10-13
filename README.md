@@ -30,14 +30,14 @@ The OCR extraction process is handled by the following set of scripts.
 - ocr_evaluation.py
 - ocr_pipeline.py
 
-In order to run the OCR extraction, the following filepaths in *ocr_pipeline.py* should be updated to reflect the relevant file locations on your device.
+In order to run the OCR extraction, the following filepaths in *config.yaml* should be updated to reflect the relevant file locations on your device.
 - *image_path:* Path to the folder of TopJobs images on your device, unzipped and added to a single folder
 - *ocr_output_path:* The path to which you prefer your output file of OCR text to be saved
 
 ## ONET Classification
 The script *onet_classification.py* handles the ONET classification process. 
 
-To run the ONET classification, the following filepaths in *onet_classification.py* should be updated to reflect the relevant file locations on your device.
+To run the ONET classification, the following filepaths in *config.yaml* should be updated to reflect the relevant file locations on your device.
 - *data_path:* Path to the TopJobs metadata file on your device
 - *occ_path:* Path to the ONET occupation titles file on your device
 - *alt_path:* Path to the ONET alternate occupation titles file on your device
@@ -50,19 +50,19 @@ To run the ONET classification, the following filepaths in *onet_classification.
 ## Skills Analysis (LDA)
 LDA-based skills analysis is handled by the script *skills_analysis.py*.
 
-To run the LDA skills analysis, the following filepath in *skills_analysis.py* should be updated to reflect the relevant file location on your device.
+To run the LDA skills analysis, the following filepath in *config.yaml* should be updated to reflect the relevant file location on your device.
 - *ocr_output_path:* Path to which the OCR output file generated in *ocr_pipeline.py* has been saved
 
 ## Skills Analysis (Top2Vec)
 Top2Vec-based skills analysis is handled by the script *topic_modeling_top2vec.py*.
 
-To run the Top2Vec skills analysis, the following filepath in *topic_modeling_top2vec.py* should be updated to reflect the relevant file location on your device.
+To run the Top2Vec skills analysis, the following filepath in *config.yaml* should be updated to reflect the relevant file location on your device.
 - *ocr_output_path:* Path to which the OCR output file generated in *ocr_pipeline.py* has been saved
 
 ## Combined Pipeline
 The script *overall_pipeline.py* handles the combined pipeline consisting of OCR extraction, ONET classification, and skills analysis.
 
-To run the overall pipeline, the following filepaths in *overall_pipeline.py* should be updated to reflect the relevant file locations on your device.
+To run the overall pipeline, the following filepaths in *config.yaml* should be updated to reflect the relevant file locations on your device.
 - *image_path:* Path to the folder of TopJobs images on your device, unzipped and added to a single folder
 - *data_path:* Path to the TopJobs metadata file on your device
 - *occ_path:* Path to the ONET occupation titles file on your device
