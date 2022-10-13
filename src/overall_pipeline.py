@@ -2,6 +2,7 @@ import ocr_pipeline
 import onet_classification
 import skills_analysis
 import topic_modeling_top2vec
+import yaml
 
 # Main Function
 def main(image_path, data_path, occ_path, alt_path, tech_path, tags_path, ocr_output_path, lockdown_date_range, embedding_model, onet_corpus_path, matches_path, text_column_name):
@@ -15,43 +16,44 @@ def main(image_path, data_path, occ_path, alt_path, tech_path, tags_path, ocr_ou
     return (ocr_df, matches) #, matches)
 
 if __name__ == '__main__':
-    # Path to the folder where project data is saved
-    folder_path = 'C:/Users/DELL/Documents/LIRNEasia/ADB/' #'/content/drive/MyDrive/LIRNEasia/ADB Project/'
+    # Reading config.yaml
+    with open("config.yaml", 'r') as stream:
+        config_dict = yaml.safe_load(stream)
 
     # Path to TopJobs advertisement images
-    image_path = "C:/Users/DELL/Documents/LIRNEasia/ADB/small_batch" #"D:/nlp/top_jobs_cs_20_21/part_1/part_1b"
+    image_path = config_dict.get("image_path")
 
     # Path to the full Topjobs dataset
-    data_path = folder_path+'data/data_full.xlsx'
+    data_path = config_dict.get("data_path")
 
     # Path to the dataset of ONET occupation titles
-    occ_path = folder_path + 'data/onet_occ_titles.txt'
+    occ_path = config_dict.get("occ_path")
 
     # Path to the dataset of ONET alternate occupation titles
-    alt_path = folder_path+'data/onet_alt_titles.txt'
+    alt_path = config_dict.get("alt_path")
 
     # Path to the dataset of technologies associated with ONET occupations
-    tech_path = folder_path+'data/onet_tech_skills.txt'
+    tech_path = config_dict.get("tech_path")
 
     # Path to the dataset of manually annotated tags for the Topjobs data sample
-    tags_path = folder_path+'data/cs_sample_tags.csv'
+    tags_path = config_dict.get("tags_path")
 
     # Path to the OCR outputs for the Topjobs data sample
-    ocr_output_path = folder_path+'small_batch.csv' #p2a_1
+    ocr_output_path = config_dict.get("ocr_output_path")
 
     # Date range during which lockdown was implemented (ASSUMPTION: All dates beyond 2020-03-01 are considered to be under lockdown)
-    lockdown_date_range = ['2020-03-01', '2022-12-31']
+    lockdown_date_range = config_dict.get("lockdown_date_range")
 
     # Path to ONET Corpus
-    onet_corpus_path = folder_path+'data/outputs/onet_corpus.csv'
+    onet_corpus_path = config_dict.get("onet_corpus_path")
 
     # Path to matches file
-    matches_path = folder_path+'data/outputs/sample_matches.csv'
+    matches_path = config_dict.get("matches_path")
 
     # Embedding Model for Top2Vec topic modelling
-    embedding_model = 'universal-sentence-encoder'
+    embedding_model = config_dict.get("embedding_model")
 
     # Text Column used for Top2Vec topic modelling
-    text_column_name = 'clean_text'
+    text_column_name = config_dict.get("text_column_name")
 
     main(image_path, data_path, occ_path, alt_path, tech_path, tags_path, ocr_output_path, lockdown_date_range, embedding_model, onet_corpus_path, matches_path, text_column_name)

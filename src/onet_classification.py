@@ -8,6 +8,7 @@ import pandas as pd
 import re
 import seaborn as sn
 import tensorflow as tf
+import yaml
 
 from gensim.models import word2vec
 from gensim.models.fasttext import FastText
@@ -299,4 +300,35 @@ def main(data_path, occ_path, alt_path, tech_path, tags_path, ocr_output_path, l
     return (matches)
 
 if __name__ == '__main__':
-    main()
+    # Reading config.yaml
+    with open("config.yaml", 'r') as stream:
+        config_dict = yaml.safe_load(stream)
+
+    # Path to the full Topjobs dataset
+    data_path = config_dict.get("data_path")
+
+    # Path to the dataset of ONET occupation titles
+    occ_path = config_dict.get("occ_path")
+
+    # Path to the dataset of ONET alternate occupation titles
+    alt_path = config_dict.get("alt_path")
+
+    # Path to the dataset of technologies associated with ONET occupations
+    tech_path = config_dict.get("tech_path")
+
+    # Path to the dataset of manually annotated tags for the Topjobs data sample
+    tags_path = config_dict.get("tags_path")
+
+    # Path to the OCR outputs for the Topjobs data sample
+    ocr_output_path = config_dict.get("ocr_output_path")
+
+    # Date range during which lockdown was implemented (ASSUMPTION: All dates beyond 2020-03-01 are considered to be under lockdown)
+    lockdown_date_range = config_dict.get("lockdown_date_range")
+
+    # Path to ONET Corpus
+    onet_corpus_path = config_dict.get("onet_corpus_path")
+
+    # Path to matches file
+    matches_path = config_dict.get("matches_path")
+
+    main(data_path, occ_path, alt_path, tech_path, tags_path, ocr_output_path, lockdown_date_range, onet_corpus_path, matches_path)
