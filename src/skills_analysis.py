@@ -7,6 +7,7 @@ import gensim
 import gensim.corpora as corpora
 from gensim.utils import simple_preprocess
 from gensim.models import CoherenceModel
+import yaml
 
 # Download stopwords and spa
 nltk.download('stopwords')
@@ -90,5 +91,12 @@ def main(file_path):
     pprint(lda_model.print_topics())
     
 if __name__ == "__main__":
-    main()
+    # Reading config.yaml
+    with open("config.yaml", 'r') as stream:
+        config_dict = yaml.safe_load(stream)
+    
+    # Path to the OCR outputs for the Topjobs data sample
+    ocr_output_path = config_dict.get("ocr_output_path")
+
+    main(ocr_output_path)
 

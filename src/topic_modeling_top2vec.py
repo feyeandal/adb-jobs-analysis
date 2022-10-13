@@ -1,7 +1,8 @@
 import numpy as np
 import pandas as pd
-from top2vec import Top2Vec
 import re
+import yaml
+from top2vec import Top2Vec
 
 # Reading the Evaluation Corpus
 
@@ -39,4 +40,17 @@ def main(ocr_output_path, text_column_name, embedding_model):
         model.generate_topic_wordcloud(i)
 
 if __name__ == "__main__":
-    main()
+    # Reading config.yaml
+    with open("config.yaml", 'r') as stream:
+        config_dict = yaml.safe_load(stream)
+    
+    # Path to the OCR outputs for the Topjobs data sample
+    ocr_output_path = config_dict.get("ocr_output_path")
+
+    # Embedding Model for Top2Vec topic modelling
+    embedding_model = config_dict.get("embedding_model")
+
+    # Text Column used for Top2Vec topic modelling
+    text_column_name = config_dict.get("text_column_name")
+
+    main(ocr_output_path, text_column_name, embedding_model)
