@@ -2,7 +2,6 @@ import numpy as np
 import pandas as pd
 import ocr_extraction
 import ocr_evaluation
-import yaml
  
  #change the declaration location 
 
@@ -31,14 +30,4 @@ def main(read_path, save_path):
 
 
 if __name__ == "__main__":
-    # Reading config.yaml
-    with open("config.yaml", 'r') as stream:
-        config_dict = yaml.safe_load(stream)
-
-    # Path to TopJobs advertisement images
-    image_path = config_dict.get("image_path")
-
-    # Path to the OCR outputs for the Topjobs data sample
-    ocr_output_path = config_dict.get("ocr_output_path")
-
-    main(image_path, ocr_output_path)
+    main()
