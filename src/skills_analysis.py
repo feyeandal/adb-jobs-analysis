@@ -41,12 +41,16 @@ def lemmatization(tokens, allowed_postags=["NOUN", "ADJ", "VERB", "ADV"]):
 def prep_data(df):
     """tokenize, remove stopwords, make bigrams and lemmatize the corpus"""
 
+    # tokenize the corpus
     tokens = list(sent_to_words(list(df["clean_text"])))
     
+    # remove the stopwords
     tokens_nostops = remove_stopwords(tokens)
     
+    # make bigrams
     tokens_bigrams = make_bigrams(tokens_nostops)
 
+    # lemmatize and retain only nouns, adjectives, verbs and adverbs
     tokens_lemmatized = lemmatization(tokens_bigrams)
     
     return tokens_lemmatized
@@ -75,19 +79,22 @@ def build_topic_models(tokens):
     return lda_model
     
     
-def main(file_path = "D:/nlp/top_jobs_cs_20_21/part_1/part_1a/p1a.csv"):
+def main(ocr_output_path):
     """reads a csv, prepares the data, builds the topic models and prints topic outputs"""
     
-    df = pd.read_csv(file_path)
+    #reading the ocr output
+    df = pd.read_csv(ocr_output_path)
     
+    #removing rows with no OCR output
     df = df[df["clean_accuracy"]>0]
     
-    df = df.sample(200)
+    #lemmatize the corpus
+    tokens_prepped = prep_data(df)
     
-    tokens_lemmatized = prep_data(df)
+    #build the topic model
+    lda_model = build_topic_models(tokens_prepped)
     
-    lda_model = build_topic_models(tokens_lemmatized)
-    
+    #print the output of the topic model
     pprint(lda_model.print_topics())
     
 if __name__ == "__main__":
