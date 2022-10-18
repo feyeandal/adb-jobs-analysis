@@ -13,3 +13,10 @@ gensim==4.2.0
 top2vec==1.0.27
 nltk==3.7
 spacy==3.4.1
+keras==2.10.0
+tensorflow==2.10.0
+seaborn==0.12.0
+joblib==1.1.0
+PyYAML==6.0
+openpyxl==3.0.10
+top2vec[sentence_encoders]
