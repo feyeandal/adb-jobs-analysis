@@ -19,7 +19,7 @@ tech_path: "/mnt/c/users/dell/documents/lirneasia/adb/data/onet_tech_skills.txt"
 tags_path: "/mnt/c/users/dell/documents/lirneasia/adb/data/cs_sample_tags.csv"
 
 # Path to the OCR outputs for the Topjobs data sample
-ocr_output_path: "/mnt/c/users/dell/documents/lirneasia/adb/small_batch.csv"
+ocr_output_path: "/mnt/c/users/dell/documents/lirneasia/adb/p1a.csv"
 
 # Date range during which lockdown was implemented (ASSUMPTION: All dates beyond 2020-03-01 are considered to be under lockdown)
 lockdown_date_range: [
@@ -32,6 +32,12 @@ onet_corpus_path: "/mnt/c/users/dell/documents/lirneasia/adb/data/outputs/onet_c
 
 # Path to matches file
 matches_path: "/mnt/c/users/dell/documents/lirneasia/adb/data/outputs/sample_matches.csv"
+
+# Path to wordclouds file
+wordclouds_path: "/mnt/c/users/dell/documents/lirneasia/adb/data/outputs/wordclouds.txt"
+
+# Path to the OCR model
+ocr_model_path: "/home/vivi/adb-jobs-analysis/models/ESPCN_x3.pb"
 
 # Embedding Model for Top2Vec topic modelling
 embedding_model: "universal-sentence-encoder"

@@ -4,6 +4,12 @@ import cv2
 import numpy as np
 from sklearn.cluster import KMeans
 
+def read_image(img_path):
+    """Read image when image path is given"""
+    image = cv2.imread(img_path)
+
+    return image
+
 def get_colors(cluster, centroids, exact=False):
     """for a given image, get all the colors and their percentages"""
     # Get the number of different clusters, create histogram, and normalize
@@ -56,16 +62,16 @@ def inversion(img):
     else:
         return img
 
-def super_res(img, path="/mnt/e/ADB_Project/github/adb-jobs-analysis/models/ESPCN_x3.pb"):
+def super_res(img, ocr_model_path):
     """increase the image resolution using OpenCV's ESPCN deep learning model"""
     
     #Load the Lapsrn model
     sr = cv2.dnn_superres.DnnSuperResImpl_create()
-    sr.readModel(path)
+    sr.readModel(ocr_model_path)
     sr.setModel("espcn", 3)
 
     #upsample and return the image
-    return sr.upsample(lwr1)
+    return sr.upsample(img)
 
 def grayscale(img): #binarization_1
     """grayscaling images"""
@@ -119,8 +125,10 @@ def add_borders(image):
     top, bottom, left, right = [250]*4
     return cv2.copyMakeBorder(image, top, bottom, left, right, cv2.BORDER_CONSTANT, value=color)
 
-def main(img):
+def main(img_path, ocr_model_path):
     """sequences the image preprocessing steps into a processing chain"""
+    #read
+    img = read_image(img_path)
     
     #invert
     inverted = inversion(img)
@@ -129,7 +137,7 @@ def main(img):
     binarized = blackwhite(inverted)
 
     #upscaled
-    upscaled = super_res(binarized)
+    upscaled = super_res(binarized, ocr_model_path)
 
     #erosion
     eroded = thick_font(upscaled)

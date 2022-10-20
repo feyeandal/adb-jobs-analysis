@@ -5,8 +5,6 @@ import enchant
 import ocr_extraction
 import image_preprocessing
 
-PATH = "E:/ADB_Project/code/data/cs_sample" # the directory where image files are stored
-
 # -------------------------------------------------------------------------------------------
 
 def get_special_chars(text_column):
@@ -61,19 +59,19 @@ def strip_additional_characters(ocr_list): #TO DO  - CONSOLIDATE FUNCTION
 
     return stripped
 
-def update_ocr(df, threshold=0.85):
+def update_ocr(df, ocr_model_path, threshold=0.85):
     """
     #for OCR accuracy values below a threshold, preprocess images to improve ocr and calculate accuracy metrics
     """
     
-    df['ocrd_text'] = df.apply(lambda x: ocr_extraction.extract_text(image_preprocessing(x['file_path'])) if (x['clean_accuracy'] < threshold) else x['ocrd_text'], axis=1)
+    df['ocrd_text'] = df.apply(lambda x: ocr_extraction.extract_text(image_preprocessing.main(x['file_path'], ocr_model_path)) if (x['clean_accuracy'] < threshold) else x['ocrd_text'], axis=1)
     df['clean_text'] = df.apply(lambda x: strip_additional_characters(x['ocrd_text']) if (x['clean_accuracy'] < threshold) else x['clean_text'], axis=1)
     df['plain_accuracy'] = df.apply(lambda x: calculate_accuracy(x['ocrd_text']) if (x['clean_accuracy'] < threshold) else x['plain_accuracy'], axis=1)
     df['clean_accuracy'] = df.apply(lambda x: calculate_accuracy(x['clean_text']) if (x['clean_accuracy'] < threshold) else x['clean_accuracy'], axis=1)
 
     return df
 
-def main(df):
+def main(df, ocr_model_path):
     """executes the ocr evaluation process"""
 
     # strips the ocrd text of additional characters
@@ -86,7 +84,7 @@ def main(df):
     df["clean_accuracy"] = df["clean_text"].apply(calculate_accuracy)
 
     # repeat the above 3 steps for images which fall below a threshold accuracy
-    df = update_ocr(df)
+    df = update_ocr(df, ocr_model_path)
 
     return df
 
