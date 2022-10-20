@@ -146,12 +146,3 @@ def main(img_path, ocr_model_path):
     bordered = add_borders(eroded)
 
     return bordered
-   
-if __name__ == "__main__":
-    main()
-  
-    
-    
-   
-    
-    

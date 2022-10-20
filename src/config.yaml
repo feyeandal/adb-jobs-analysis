@@ -1,4 +1,7 @@
 ---
+# Name of the script to run
+script_name: "ocr_extraction"
+
 # Path to TopJobs advertisement images
 image_path: "/mnt/c/users/dell/documents/lirneasia/adb/images"
 

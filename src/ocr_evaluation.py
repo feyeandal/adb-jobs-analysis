@@ -87,10 +87,3 @@ def main(df, ocr_model_path):
     df = update_ocr(df, ocr_model_path)
 
     return df
-
-if __name__ == "__main__":
-    main()
-
-
-
-

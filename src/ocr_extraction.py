@@ -35,4 +35,3 @@ def extract_bulk(path):
     }
 
     return ocrd
-

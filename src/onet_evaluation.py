@@ -63,16 +63,3 @@ def main(matches_path, tags_path):
     matches, confusion_matrix = evaluate_matches(matches, matches_path)
 
     return (matches,confusion_matrix)
-
-if __name__ == '__main__':
-    # Reading config.yaml
-    with open("config.yaml", 'r') as stream:
-        config_dict = yaml.safe_load(stream)
-
-    # Path to matches file
-    matches_path = config_dict.get("matches_path")
-
-    # Path to the dataset of manually annotated tags for the Topjobs data sample
-    tags_path = config_dict.get("tags_path")
-
-    main(matches_path, tags_path)

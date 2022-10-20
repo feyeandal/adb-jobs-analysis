@@ -19,14 +19,17 @@ Your device can be set up to run this code by following the given steps.
 - Download the [Requirements File](https://github.com/LIRNEasia/adb-jobs-analysis/blob/b53aa3bc076b4df0072c07d0d36b547eac1a89ff/requirements.txt) and install the dependencies.
 
 # Running the Code
-The Python scripts that should be run to carry out each task are as follows.
-    - *OCR Extraction Process:* ocr_pipeline.py
-    - *ONET Classification Process:* onet_classification.py
-    - *Skills Analysis (LDA):* skills_analysis.py
-    - *Skills Analysis (Top2Vec): topic_modeling_top2vec.py
-    - *Combined Pipeline:* overall_pipeline.py
+The Python script *main.py* handles the overall process. To run a selected module or a set of modules, the variable *process_name* in the configuration file *config.yaml* should be updated as follows.
+    - *OCR Extraction Process:* ocr_extraction
+    - *ONET Classification Process:* onet_classification
+    - *ONET Evaluation Process:* onet_evaluation
+    - *Skills Analysis (LDA):* skills_analysis_lda
+    - *Skills Analysis (Top2Vec):* skills_analysis_top2vec
+    - *Combined Pipeline:* overall_pipeline
 
 ## OCR Extraction
+The purpose of OCR extraction is to identify and extract the textual content in all images in a given folder.
+
 The OCR extraction process is handled by the following set of scripts.
 - ocr_extraction.py
 - ocr_evaluation.py
@@ -38,6 +41,8 @@ In order to run the OCR extraction, the following filepaths in *config.yaml* sho
 - *ocr_model_path:* The path to the OCR image preprocessing model on your device
 
 ## ONET Classification
+The ONET classification aims to identify and annotate all job vacancy postings in a given topjobs dataset with the relevant ONET Occupation codes.
+
 The script *onet_classification.py* handles the ONET classification process. 
 
 To run the ONET classification, the following filepaths in *config.yaml* should be updated to reflect the relevant file locations on your device.
@@ -45,18 +50,31 @@ To run the ONET classification, the following filepaths in *config.yaml* should 
 - *occ_path:* Path to the ONET occupation titles file on your device
 - *alt_path:* Path to the ONET alternate occupation titles file on your device
 - *tech_path:* Path to the file of ONET technologies associated with occupation titles on your device
-- *tags_path:* Path to the manually annotated TopJobs dataset on your device
 - *ocr_output_path:* Path to which the OCR output file generated in *ocr_pipeline.py* has been saved
 - *onet_corpus_path:* Path to which you prefer your output file of ONET data to be saved
 - *matches_path:* Path to which you prefer your output file of ONET occupations matched to TopJobs vacancies to be saved
 
-## Skills Analysis (LDA)
+## ONET Evaluation
+The objective of the ONET evaluation is to evaluate the performance of the ONET Classification process using a TopJobs data sample of 500 vacancy postings which is manually annotated with ONET categories.
+
+This process is handled by the script *onet_evaluation.py*.
+
+To run the ONET evaluation, the following filepaths in *config.yaml* should be updated to reflect the relevant file location on your device.
+
+- *tags_path:* Path to the manually annotated TopJobs dataset on your device
+- *matches_path:* Path to which you the matches output file generated in *onet_classification.py* has been saved
+
+## LDA-Based Skills Analysis
+The objective of this process is to identify the dominant sets of skills mentioned in a given vacancy dataset using LDA topic modelling.
+
 LDA-based skills analysis is handled by the script *skills_analysis.py*.
 
 To run the LDA skills analysis, the following filepath in *config.yaml* should be updated to reflect the relevant file location on your device.
 - *ocr_output_path:* Path to which the OCR output file generated in *ocr_pipeline.py* has been saved
 
-## Skills Analysis (Top2Vec)
+## Top2Vec-Based Skills Analysis
+This process aims to identify the dominant sets of skills in a given vacancy dataset using Top2Vec topic modelling.
+
 Top2Vec-based skills analysis is handled by the script *topic_modeling_top2vec.py*.
 
 To run the Top2Vec skills analysis, the following filepath in *config.yaml* should be updated to reflect the relevant file location on your device.
@@ -64,7 +82,7 @@ To run the Top2Vec skills analysis, the following filepath in *config.yaml* shou
 - *wordclouds_path:* Path to which you prefer your output wordcloud file to be saved
 
 ## Combined Pipeline
-The script *overall_pipeline.py* handles the combined pipeline consisting of OCR extraction, ONET classification, and skills analysis.
+The combined pipeline runs the whole process of OCR extraction, ONET classification, LDA-based skills analysis, and Top2Vec-based skills analysis.
 
 To run the overall pipeline, the following filepaths in *config.yaml* should be updated to reflect the relevant file locations on your device.
 - *image_path:* Path to the folder of TopJobs images on your device, unzipped and added to a single folder
@@ -72,7 +90,6 @@ To run the overall pipeline, the following filepaths in *config.yaml* should be 
 - *occ_path:* Path to the ONET occupation titles file on your device
 - *alt_path:* Path to the ONET alternate occupation titles file on your device
 - *tech_path:* Path to the file of ONET technologies associated with occupation titles on your device
-- *tags_path:* Path to the manually annotated TopJobs dataset on your device
 - *ocr_output_path:* The path to which you prefer your output file of OCR text to be saved
 - *onet_corpus_path:* Path to which you prefer your output file of ONET data to be saved
 - *matches_path:* Path to which you prefer your output file of ONET occupations matched to TopJobs vacancies to be saved

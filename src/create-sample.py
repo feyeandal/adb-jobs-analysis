@@ -13,4 +13,3 @@ for cat in data_dirs:
     for advert in adverts_sample:
         zip_file.write(data_dirs[cat] + advert)
     zip_file.close()
-    
