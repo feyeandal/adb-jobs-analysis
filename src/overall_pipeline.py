@@ -5,13 +5,13 @@ import topic_modeling_top2vec
 import yaml
 
 # Main Function
-def main(image_path, data_path, occ_path, alt_path, tech_path, tags_path, ocr_output_path, lockdown_date_range, embedding_model, onet_corpus_path, matches_path, text_column_name):
+def main(image_path, data_path, occ_path, alt_path, tech_path, ocr_output_path, lockdown_date_range, embedding_model, onet_corpus_path, matches_path, text_column_name, wordclouds_path, ocr_model_path):
 
-    ocr_df = ocr_pipeline.main(image_path, ocr_output_path)
-    matches = onet_classification.main(data_path, occ_path, alt_path, tech_path, tags_path, ocr_output_path, lockdown_date_range, onet_corpus_path, matches_path)
+    ocr_df = ocr_pipeline.main(image_path, ocr_output_path, ocr_model_path)
+    matches = onet_classification.main(data_path, occ_path, alt_path, tech_path, ocr_output_path, lockdown_date_range, onet_corpus_path, matches_path)
 
     skills_analysis.main(ocr_output_path)
-    topic_modeling_top2vec.main(ocr_output_path, text_column_name, embedding_model)
+    topic_modeling_top2vec.main(ocr_output_path, wordclouds_path, text_column_name, embedding_model)
 
     return (ocr_df, matches)
 
@@ -50,10 +50,16 @@ if __name__ == '__main__':
     # Path to matches file
     matches_path = config_dict.get("matches_path")
 
+    # Path to wordclouds file
+    wordclouds_path = config_dict.get("wordclouds_path")
+
+    # Path to the OCR model
+    ocr_model_path = config_dict.get("ocr_model_path")
+
     # Embedding Model for Top2Vec topic modelling
     embedding_model = config_dict.get("embedding_model")
 
     # Text Column used for Top2Vec topic modelling
     text_column_name = config_dict.get("text_column_name")
 
-    main(image_path, data_path, occ_path, alt_path, tech_path, tags_path, ocr_output_path, lockdown_date_range, embedding_model, onet_corpus_path, matches_path, text_column_name)
+    main(image_path, data_path, occ_path, alt_path, tech_path, tags_path, ocr_output_path, lockdown_date_range, embedding_model, onet_corpus_path, matches_path, text_column_name, wordclouds_path, ocr_model_path)
