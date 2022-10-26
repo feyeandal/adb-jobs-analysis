@@ -15,42 +15,28 @@ def read_sample_data(ocr_output_path):
 
 # Topic Modeling Using Top2Vec
 
-def model_topics(df_column, embedding_model):
+def model_topics(df_column, embedding_model, wordclouds_path):
     '''Executes topic modelling for the dataset.'''
 
     model = Top2Vec(df_column.values, embedding_model=embedding_model)
 
     num_topics = model.get_num_topics()
 
-    for i in range (num_topics):
-        print(model.topic_words[i])
-        model.generate_topic_wordcloud(i)
+    with open(wordclouds_path, 'w') as fp:
+        for i in range (num_topics):
+            print(model.topic_words[i])
+            model.generate_topic_wordcloud(i)
+            fp.write("%s\n" % model.topic_words[i])
     
     return model
 
-def main(ocr_output_path, text_column_name, embedding_model):
+def main(ocr_output_path, wordclouds_path, text_column_name, embedding_model):
     sample = read_sample_data(ocr_output_path)
 
-    model = model_topics(sample[text_column_name].astype(str), embedding_model)
+    model = model_topics(sample[text_column_name].astype(str), embedding_model, wordclouds_path)
 
     num_topics = model.get_num_topics()
 
     for i in range (num_topics):
         print(model.topic_words[i])
         model.generate_topic_wordcloud(i)
-
-if __name__ == "__main__":
-    # Reading config.yaml
-    with open("config.yaml", 'r') as stream:
-        config_dict = yaml.safe_load(stream)
-    
-    # Path to the OCR outputs for the Topjobs data sample
-    ocr_output_path = config_dict.get("ocr_output_path")
-
-    # Embedding Model for Top2Vec topic modelling
-    embedding_model = config_dict.get("embedding_model")
-
-    # Text Column used for Top2Vec topic modelling
-    text_column_name = config_dict.get("text_column_name")
-
-    main(ocr_output_path, text_column_name, embedding_model)

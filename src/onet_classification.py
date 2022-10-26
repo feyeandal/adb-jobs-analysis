@@ -8,7 +8,6 @@ import pandas as pd
 import re
 import seaborn as sn
 import tensorflow as tf
-import yaml
 
 from gensim.models import word2vec
 from gensim.models.fasttext import FastText
@@ -16,7 +15,6 @@ from gensim.models.keyedvectors import KeyedVectors
 from keras import backend as K
 from keras.constraints import maxnorm
 from keras.models import Sequential,Model,load_model
-# from keras.preprocessing.sequence import pad_sequences
 from keras.preprocessing.text import Tokenizer
 from nltk.stem import PorterStemmer
 from nltk.tokenize import word_tokenize
@@ -50,28 +48,15 @@ def read_onet_data(occ_path, alt_path, tech_path):
 
     return onet_data
 
-# Reading the Evaluation Corpus
+# Reading TopJobs Data
 
-def compose_data_sample(data_path, tags_path):
+def read_topjobs_data(data_path):
     '''Composes the data sample by combining the original Topjobs data with manually annotated tags'''
 
     # Reading the original Topjobs dataset
     data_full = pd.read_excel(data_path)
 
-    # Reading the manually annotated tags for the data sample
-    sample_tags = pd.read_csv(tags_path)
-
-    # sample_tags['image_drive_url'] = image_path + sample_tags['file_name']
-    sample_tags['job_code'] = sample_tags.file_name.replace(to_replace='[^0-9]', value='', regex=True).astype(int)
-    
-    # Composing a single dataset by appending manually annotated tags to the Topjobs dataset
-    sample = pd.merge(left=sample_tags, right=data_full, how='left', on='job_code')
-    sample['tags'] = sample[['tag_1', 'tag_2', 'tag_3', 'tag_4', 'tag_5', 'tag_6', 'tag_7', 'tag_8', 'tag_9', 'tag_10']].values.tolist()
-    sample = sample.drop(columns=['tag_1', 'tag_2', 'tag_3', 'tag_4', 'tag_5', 'tag_6', 'tag_7', 'tag_8', 'tag_9', 'tag_10'])
-
-    del sample_tags, data_full
-
-    return sample
+    return data_full
 
 # Appending the OCR Outputs to sample data
 
@@ -88,10 +73,11 @@ def append_ocr_output(ocr_path, sample):
     sample_ocr_output = sample_ocr_output.rename(columns={'vacancy_id': 'job_code'})
 
     # Composing a single dataset by appending OCR outputs to the sample
-    sample = pd.merge(left=sample, right=sample_ocr_output, how='left', on='job_code')
+    sample = pd.merge(left=sample, right=sample_ocr_output, how='right', on='job_code').dropna()
 
     # Lowercasing the OCR output
     sample['tj_desc'] = sample['clean_text'].str.lower()
+    print (sample.shape)
 
     # Dropping unnecessary columns
     sample_ocr_output = sample_ocr_output.drop(columns=['ocrd_text', 'plain_accuracy', 'clean_accuracy'])
@@ -101,8 +87,8 @@ def append_ocr_output(ocr_path, sample):
 # Calculating the Lockdown Status for Job Posting
 
 def calculate_lockdown_status(sample, lockdown_date_range):
-    '''Returns 1 if the start date of the job posting falls within the date range of lockdowns provided.
-    Returns 0 otherwise.'''
+    '''Returns True if the start date of the job posting falls within the date range of lockdowns provided.
+    Returns False otherwise.'''
 
     lockdown_lowerbound = lockdown_date_range[0] <= sample.start_date
     lockdown_upperbound = sample.start_date <= lockdown_date_range[1]
@@ -114,10 +100,10 @@ def calculate_lockdown_status(sample, lockdown_date_range):
 # Calculating whether the Job Posting Mentions Work From Home Opportunities
 
 def calculate_wfh_mention_status(sample):
-    '''Returns 1 if the job posting mentions the phrase work from home.
-    Returns 0 otherwise'''
+    '''Returns True if the job posting mentions the phrase work from home.
+    Returns False otherwise'''
 
-    sample['wfh_status'] = np.where(sample['tj_desc'].str.contains('work from home'),1, 0)
+    sample['wfh_status'] = np.where(sample['tj_desc'].str.contains('work from home'),True, False)
 
     return sample
 
@@ -132,7 +118,7 @@ def prepare_sample(sample, lockdown_date_range):
     sample = calculate_wfh_mention_status(sample)
 
     sample = sample.rename(columns={'job_code': 'tj_code', 'job_title': 'tj_title', })
-    sample = sample.drop(columns=['job_description', 'remark', 'functional_area', 'expiry_date', 'image_string', 'image_source', 'image_code', 'image_url', 'start_date'])
+    sample = sample.drop(columns=['job_description', 'remark', 'functional_area', 'expiry_date', 'image_string', 'image_source', 'image_code', 'image_url'])
     
     return sample
 
@@ -140,6 +126,7 @@ def prepare_sample(sample, lockdown_date_range):
 
 def create_onet_corpus(onet_data, onet_corpus_path):
     '''Creates a combined corpus where each data item consists of the onet occupation titles and alternate titles associated with each job separated by spaces.'''
+    
     onet_data['onet_family'] = onet_data['onet_code'].str.slice(stop=2)
     onet_corpus = onet_data.onet_title + ' ' + [' '.join(titles) for titles in onet_data.onet_title_alt]
 
@@ -213,8 +200,6 @@ def calculate_cosine_similarity(onet_tfidf, sample_tfidf_title, sample_tfidf_des
         columns=onet_data.onet_code,#onet_data.onet_family.unique(),
         index=sample.tj_code)
 
-    # sample_comb.to_csv(folder_path+'data/outputs/sample_comb.csv', index=False)
-
     del wl_title, we_title, wl_desc, we_desc
 
     return sample_comb
@@ -229,63 +214,38 @@ def get_onet_matches(sample, sample_comb, onet_data):
 
     # Adding the ONET occupation code and family code of the matched occupation to each Topjobs posting
     for job in sample.tj_code:
-        code = sample_comb.loc[job, sample_comb.columns].idxmax() #.str.startswith(family)].idxmax()
+        code = sample_comb.loc[job, sample_comb.columns].idxmax()
+        broad = code[0:6]+'0'
         family = code[0:2]
+
         matches.loc[job, 'onet_code'] = code
+        matches.loc[job, 'onet_broad_occupation_category'] = broad
         matches.loc[job, 'onet_family'] = family
 
     matches = matches.reset_index()
     matches = matches[matches['onet_family'].notna()]
 
     # Composing a single dataset by appending useful data from the Topjobs dataset to matches dataset
-    matches = pd.merge(left=matches, right=sample[['tj_code', 'tj_title', 'tj_desc', 'tags', 'lockdown_status', 'wfh_status']], on='tj_code')
+    matches = pd.merge(left=matches, right=sample, on='tj_code')
     matches = pd.merge(left=matches, right=onet_data[['onet_code', 'onet_title', 'onet_desc']], on='onet_code')
 
     # Cleaning the title column
     matches.tj_title = [unquote(str(title)) for title in matches.tj_title]
     matches.tj_title = [re.sub('\+', ' ', title) for title in matches.tj_title]
 
-    # matches_title = matches.groupby('onet_family').size()
     matches = matches.set_index('tj_code', drop=False)
-
-    return matches
-
-# Evaluating Matches
-
-def evaluate_matches(matches, matches_path):
-    '''Evaluates the performance of the tf-idf vectorizer by generating a confusion matrix between manually anotated ONET categories and those annotated via tf-idf.'''
-
-    for job in matches.tj_code:
-        tags = matches.at[job,'tags']
-        tag_families = [int(str(tag)[0:2]) for tag in tags if pd.notnull(tag)]
-        tag_families = (tag_families + [None]*10)[:10]
-        onet_family = matches.at[job,'onet_family']
-
-        matches.loc[job, 'tag_families'] = [[tag_families]]
-        matches.loc[job, 'first_tag_family'] = str(matches.loc[job, 'tag_families'][0][0])
-        matches.loc[job, 'match_value'] = [int(onet_family) in tag_families]
-
-    # matches.groupby(['wfh_status', 'lockdown_status']).size()
 
     matches.to_csv(matches_path, index=False)
 
-    # Generating the confusion matrix
-    confusion_matrix = pd.crosstab(matches.first_tag_family, matches.onet_family, rownames=['Actual'], colnames=['Predicted'])
-    print (confusion_matrix)
-
-    # Generating the heatmap for the confusion matrix
-    sn.heatmap(confusion_matrix, annot=True)
-    plt.show()
-
-    return confusion_matrix
+    return matches
 
 ################################################
 
 # Main Function
-def main(data_path, occ_path, alt_path, tech_path, tags_path, ocr_output_path, lockdown_date_range, onet_corpus_path, matches_path):
+def main(data_path, occ_path, alt_path, tech_path, ocr_output_path, lockdown_date_range, onet_corpus_path, matches_path):
     onet_data = read_onet_data(occ_path, alt_path, tech_path)
 
-    sample = compose_data_sample(data_path, tags_path)
+    sample = read_topjobs_data(data_path)
     sample = append_ocr_output(ocr_output_path, sample)
     sample = prepare_sample(sample, lockdown_date_range)
 
@@ -296,39 +256,5 @@ def main(data_path, occ_path, alt_path, tech_path, tags_path, ocr_output_path, l
     sample_comb = calculate_cosine_similarity(onet_tfidf, sample_tfidf_title, sample_tfidf_desc, onet_data, sample)
 
     matches = get_onet_matches(sample, sample_comb, onet_data)
-    confusion_matrix = evaluate_matches(matches, matches_path)
+    
     return (matches)
-
-if __name__ == '__main__':
-    # Reading config.yaml
-    with open("config.yaml", 'r') as stream:
-        config_dict = yaml.safe_load(stream)
-
-    # Path to the full Topjobs dataset
-    data_path = config_dict.get("data_path")
-
-    # Path to the dataset of ONET occupation titles
-    occ_path = config_dict.get("occ_path")
-
-    # Path to the dataset of ONET alternate occupation titles
-    alt_path = config_dict.get("alt_path")
-
-    # Path to the dataset of technologies associated with ONET occupations
-    tech_path = config_dict.get("tech_path")
-
-    # Path to the dataset of manually annotated tags for the Topjobs data sample
-    tags_path = config_dict.get("tags_path")
-
-    # Path to the OCR outputs for the Topjobs data sample
-    ocr_output_path = config_dict.get("ocr_output_path")
-
-    # Date range during which lockdown was implemented (ASSUMPTION: All dates beyond 2020-03-01 are considered to be under lockdown)
-    lockdown_date_range = config_dict.get("lockdown_date_range")
-
-    # Path to ONET Corpus
-    onet_corpus_path = config_dict.get("onet_corpus_path")
-
-    # Path to matches file
-    matches_path = config_dict.get("matches_path")
-
-    main(data_path, occ_path, alt_path, tech_path, tags_path, ocr_output_path, lockdown_date_range, onet_corpus_path, matches_path)
