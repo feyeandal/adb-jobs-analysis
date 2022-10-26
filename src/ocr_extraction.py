@@ -6,8 +6,6 @@ import pytesseract
 import os
 from pathlib import Path
 
-pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract' #path to the downloaded tesseract ocr-engine
-
 def extract_text(image_path):
     """ extracts text for a single image"""
     return pytesseract.image_to_string(image_path)

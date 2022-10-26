@@ -14,7 +14,9 @@ The input files are available to download at the following locations.
 - [*TopJobs Manually Annotated Tags*](https://drive.google.com/file/d/1aHbwE212BWWWE0i1Aem8deDLEKQACWIs/view?usp=sharing)
 
 # Setting Up
-Download the [Requirements File](https://github.com/LIRNEasia/adb-jobs-analysis/blob/b53aa3bc076b4df0072c07d0d36b547eac1a89ff/requirements.txt) and install the dependencies.
+Your device can be set up to run this code by following the given steps.
+- Download and install Tesseract on your device.
+- Download the [Requirements File](https://github.com/LIRNEasia/adb-jobs-analysis/blob/b53aa3bc076b4df0072c07d0d36b547eac1a89ff/requirements.txt) and install the dependencies.
 
 # Running the Code
 The Python scripts that should be run to carry out each task are as follows.
@@ -33,6 +35,7 @@ The OCR extraction process is handled by the following set of scripts.
 In order to run the OCR extraction, the following filepaths in *config.yaml* should be updated to reflect the relevant file locations on your device.
 - *image_path:* Path to the folder of TopJobs images on your device, unzipped and added to a single folder
 - *ocr_output_path:* The path to which you prefer your output file of OCR text to be saved
+- *ocr_model_path:* The path to the OCR image preprocessing model on your device
 
 ## ONET Classification
 The script *onet_classification.py* handles the ONET classification process. 
@@ -58,6 +61,7 @@ Top2Vec-based skills analysis is handled by the script *topic_modeling_top2vec.p
 
 To run the Top2Vec skills analysis, the following filepath in *config.yaml* should be updated to reflect the relevant file location on your device.
 - *ocr_output_path:* Path to which the OCR output file generated in *ocr_pipeline.py* has been saved
+- *wordclouds_path:* Path to which you prefer your output wordcloud file to be saved
 
 ## Combined Pipeline
 The script *overall_pipeline.py* handles the combined pipeline consisting of OCR extraction, ONET classification, and skills analysis.
@@ -72,3 +76,5 @@ To run the overall pipeline, the following filepaths in *config.yaml* should be 
 - *ocr_output_path:* The path to which you prefer your output file of OCR text to be saved
 - *onet_corpus_path:* Path to which you prefer your output file of ONET data to be saved
 - *matches_path:* Path to which you prefer your output file of ONET occupations matched to TopJobs vacancies to be saved
+- *wordclouds_path:* Path to which you prefer your output wordcloud file to be saved
+- *ocr_model_path:* The path to the OCR image preprocessing model on your device

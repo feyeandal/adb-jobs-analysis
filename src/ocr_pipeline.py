@@ -6,7 +6,7 @@ import yaml
  
  #change the declaration location 
 
-def main(read_path, save_path):
+def main(read_path, save_path, ocr_model_path):
     """ reads images from a directory and saves final ocr output to a csv"""
     #uses the ocr_extraction sub-module to conduct initial OCR and build a dataframe
     text = ocr_extraction.extract_bulk(read_path)
@@ -22,7 +22,7 @@ def main(read_path, save_path):
     #TO DO - Add logging to the pipeline to: 1. mark checkpoints, and 2. see how it's performing
 
     #iteratre through the dataset, identify poor quality ocr, preprocess images & perform ocr again
-    ocr_df = ocr_evaluation.update_ocr(ocr_df)
+    ocr_df = ocr_evaluation.update_ocr(ocr_df, ocr_model_path)
 
     #save the final dataframe to a csv
     ocr_df.to_csv(save_path, index=False)
@@ -41,4 +41,7 @@ if __name__ == "__main__":
     # Path to the OCR outputs for the Topjobs data sample
     ocr_output_path = config_dict.get("ocr_output_path")
 
-    main(image_path, ocr_output_path)
+    # Path to the OCR model
+    ocr_model_path = config_dict.get("ocr_model_path")
+
+    main(image_path, ocr_output_path, ocr_model_path)
