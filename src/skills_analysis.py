@@ -7,6 +7,7 @@ import gensim
 import gensim.corpora as corpora
 from gensim.utils import simple_preprocess
 from gensim.models import CoherenceModel
+import yaml
 
 # Download stopwords and spa
 nltk.download('stopwords')
@@ -88,7 +89,3 @@ def main(file_path):
     
     #Print the Keyword in the 20 topics
     pprint(lda_model.print_topics())
-    
-if __name__ == "__main__":
-    main()
-
