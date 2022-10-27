@@ -7,6 +7,7 @@ import gensim
 import gensim.corpora as corpora
 from gensim.utils import simple_preprocess
 from gensim.models import CoherenceModel
+import yaml
 
 # Download stopwords and spacy model
 nltk.download('stopwords')
@@ -96,8 +97,3 @@ def main(ocr_output_path):
     
     #print the output of the topic model
     pprint(lda_model.print_topics())
-    
-if __name__ == "__main__":
-    main()
-
-

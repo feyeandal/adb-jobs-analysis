@@ -1,0 +1,49 @@
+---
+# Name of the script to run
+script_name: "ocr_extraction"
+
+# Path to TopJobs advertisement images
+image_path: "/mnt/c/users/dell/documents/lirneasia/adb/images"
+
+# Path to the Topjobs metadata corpus
+data_path: "/mnt/c/users/dell/documents/lirneasia/adb/data/data_full.xlsx"
+
+# Path to the dataset of ONET occupation titles
+occ_path: "/mnt/c/users/dell/documents/lirneasia/adb/data/onet_occ_titles.txt"
+#"C:/Users/DELL/Documents/LIRNEasia/ADB/data/onet_occ_titles.txt"
+
+# Path to the dataset of ONET alternate occupation titles
+alt_path: "/mnt/c/users/dell/documents/lirneasia/adb/data/onet_alt_titles.txt"
+
+# Path to the dataset of technologies associated with ONET occupations
+tech_path: "/mnt/c/users/dell/documents/lirneasia/adb/data/onet_tech_skills.txt"
+
+# Path to the dataset of manually annotated tags for the Topjobs data sample
+tags_path: "/mnt/c/users/dell/documents/lirneasia/adb/data/cs_sample_tags.csv"
+
+# Path to the OCR outputs for the Topjobs data sample
+ocr_output_path: "/mnt/c/users/dell/documents/lirneasia/adb/p1a.csv"
+
+# Date range during which lockdown was implemented (ASSUMPTION: All dates beyond 2020-03-01 are considered to be under lockdown)
+lockdown_date_range: [
+  "2020-03-01",
+  "2022-12-31"
+]
+
+# Path to ONET Corpus
+onet_corpus_path: "/mnt/c/users/dell/documents/lirneasia/adb/data/outputs/onet_corpus.csv"
+
+# Path to matches file
+matches_path: "/mnt/c/users/dell/documents/lirneasia/adb/data/outputs/sample_matches.csv"
+
+# Path to wordclouds file
+wordclouds_path: "/mnt/c/users/dell/documents/lirneasia/adb/data/outputs/wordclouds.txt"
+
+# Path to the OCR model
+ocr_model_path: "/home/vivi/adb-jobs-analysis/models/ESPCN_x3.pb"
+
+# Embedding Model for Top2Vec topic modelling
+embedding_model: "universal-sentence-encoder"
+
+# Text Column used for Top2Vec topic modelling
+text_column_name: "clean_text"
