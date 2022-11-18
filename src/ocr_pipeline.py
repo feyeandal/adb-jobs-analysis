@@ -102,22 +102,6 @@ def update_ocr(df, ocr_model_path, threshold=0.85):
     return df
 
 
-# def evaluate_ocr_process(ocr_df, ocr_model_path):
-#     """executes the ocr evaluation process"""
-
-#     # calculates accuracy on the OCR output column
-#     ocr_df["plain_accuracy"] = ocr_df["ocrd_text"].apply(calculate_accuracy)
-
-#     # calculates accuracy on the OCR output stripped of additional characters
-#     ocr_df["clean_accuracy"] = ocr_df["clean_text"].apply(calculate_accuracy)
-
-#     # repeat the above 3 steps for images which fall below a threshold accuracy
-#     ocr_df = update_ocr(ocr_df, ocr_model_path)
-
-#     return ocr_df
-
-
-
 def main(read_path, save_path, ocr_model_path):
     """ reads images from a directory and saves final ocr output to a csv"""
     #uses the ocr_extraction sub-module to conduct initial OCR and build a dataframe
