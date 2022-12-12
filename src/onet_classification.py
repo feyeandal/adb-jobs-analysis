@@ -1,5 +1,6 @@
 import gensim
 import keras
+import logging
 import matplotlib.image  as mpimg
 import matplotlib.pyplot as plt
 import nltk
@@ -21,6 +22,8 @@ from nltk.tokenize import word_tokenize
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import linear_kernel
 from urllib.parse import unquote
+
+nltk.download('punkt')
 
 # Reading ONET Data
 
@@ -206,7 +209,7 @@ def calculate_cosine_similarity(onet_tfidf, sample_tfidf_title, sample_tfidf_des
 
 # Matching ONET Categories to Job Postings
 
-def get_onet_matches(sample, sample_comb, onet_data):
+def get_onet_matches(sample, sample_comb, onet_data, matches_path):
     '''Combines the Topjobs data sample with details of the ONET occupation matched to each vacancy posting via tf-idf.'''
 
     # Creating new dataframe
@@ -243,18 +246,32 @@ def get_onet_matches(sample, sample_comb, onet_data):
 
 # Main Function
 def main(data_path, occ_path, alt_path, tech_path, ocr_output_path, lockdown_date_range, onet_corpus_path, matches_path):
+    
+    logging.info('Reading onet data')
     onet_data = read_onet_data(occ_path, alt_path, tech_path)
 
+    logging.info('Reading topjobs data')
     sample = read_topjobs_data(data_path)
+
+    logging.info('Appending ocr output')
     sample = append_ocr_output(ocr_output_path, sample)
+
+    logging.info('Preparing sample')
     sample = prepare_sample(sample, lockdown_date_range)
 
+    logging.info('Onet corpus')
     onet_corpus = create_onet_corpus(onet_data, onet_corpus_path)
+
+    logging.info('TFIDF')
     tfidf_vect, onet_tfidf = create_tf_idf_vector(onet_corpus)
 
+    logging.info('vectorizing')
     sample_tfidf_title, sample_tfidf_desc = vectorize_sample(sample, tfidf_vect)
+    
+    logging.info('cosine similarity')
     sample_comb = calculate_cosine_similarity(onet_tfidf, sample_tfidf_title, sample_tfidf_desc, onet_data, sample)
 
-    matches = get_onet_matches(sample, sample_comb, onet_data)
+    logging.info('getting matches')
+    matches = get_onet_matches(sample, sample_comb, onet_data, matches_path)
     
     return (matches)
