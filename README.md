@@ -18,14 +18,29 @@ Your device can be set up to run this code by following the given steps.
 - Download and install Tesseract on your device.
 - Download the [Requirements File](https://github.com/LIRNEasia/adb-jobs-analysis/blob/b53aa3bc076b4df0072c07d0d36b547eac1a89ff/requirements.txt) and install the dependencies.
 
+
 # Running the Code
+
+The script `main.py` runs all the modules in the project. The script executes the following:
+
+- OCR to extract text from the advert images
+- ONET classification to map the adverts to the ONET job classification
+- Skills analysis to extract specific skills required by the job adverts.
+
+To parameters needed by the script is set through a configuration file. The `example_config.yaml` includes details on how to setup the configuration file. Once the configuration is setup, the code can be executed from the root folder of the project using the following command:
+
+```
+$ python src/main.py -c path/to/the/config/file
+```
+
+<!-- # Running the Code
 The Python script *main.py* handles the overall process. To run a selected module or a set of modules, the variable *process_name* in the configuration file *config.yaml* should be updated as follows.
     - *OCR Extraction Process:* ocr_extraction
     - *ONET Classification Process:* onet_classification
     - *ONET Evaluation Process:* onet_evaluation
     - *Skills Analysis (LDA):* skills_analysis_lda
     - *Skills Analysis (Top2Vec):* skills_analysis_top2vec
-    - *Combined Pipeline:* overall_pipeline
+    - *Combined Pipeline:* overall_pipeline -->
 
 ## OCR Extraction
 The purpose of OCR extraction is to identify and extract the textual content in all images in a given folder.
