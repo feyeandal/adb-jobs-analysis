@@ -34,7 +34,7 @@ def extract_text_bulk(folder_path):
     logging.info(f'Folder contains {num_images} images')
 
     for i, vacancy in enumerate(all_images):
-        logging.info(f'Processing {vacancy}: {i}/{num_images}')
+        logging.info(f'Processing {vacancy}: {i+1}/{num_images}')
 
         try:
             image_path = f"{folder_path}/{vacancy}"
