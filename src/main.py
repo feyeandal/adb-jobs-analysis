@@ -11,7 +11,7 @@ from utils import read_config_file
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
 formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
-fh = logging.FileHandler('logs/pipeline_log.log', mode='w')
+fh = logging.FileHandler('adb_pipeline_log.log', mode='w')
 fh.setFormatter(formatter)
 logger.addHandler(fh)
 
