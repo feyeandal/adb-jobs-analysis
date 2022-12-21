@@ -15,7 +15,7 @@ def extract_text_one_image(image_path):
 
 
  #change the declaration location 
-def extract_text_bulk(folder_path):
+def extract_text_bulk(folder_path, ocr_model_path, acc_threshold = 0.70):
     """ Extracts text from all images in a given directory
     args:
         folder_path (str): absolute path for the folder
@@ -33,6 +33,11 @@ def extract_text_bulk(folder_path):
     num_images = len(all_images)
     logging.info(f'Folder contains {num_images} images')
 
+    low_accuracy_images = []
+    cleaned_texts = []
+    plain_accuracy = []
+    clean_accuracy = []
+
     for i, vacancy in enumerate(all_images):
         logging.info(f'Processing {vacancy}: {i+1}/{num_images}')
 
@@ -41,22 +46,37 @@ def extract_text_bulk(folder_path):
 
             # Using pytesseract to extract text
             text = extract_text_one_image(image_path)
+            stripped_text = strip_additional_characters(text)
+            plain_accuracy_image = calculate_accuracy(text)
+            clean_accuracy_image = calculate_accuracy(stripped_text)
+
+            if plain_accuracy_image < acc_threshold:
+                low_accuracy_images.append((image_path, vacancy))
+            
+            cleaned_texts.append(stripped_text)
+            plain_accuracy.append(plain_accuracy_image)
+            clean_accuracy.append(clean_accuracy_image)
 
             filepaths.append(image_path)
             vacancies.append(vacancy.split(".")[0])
             image2text.append(text)
+            stripped_text = strip_additional_characters(text)
+            cleaned_texts.append(strip_additional_characters(text))
 
         except: #TODO Catch a specific exception
             tesseract_failures.append(vacancy)
             logging.error(f"Tesseract Failure: {vacancy}")   
-
+    
     ocrd = {
         "vacancy_id": vacancies,
         "file_path": filepaths,
         "ocrd_text": image2text
+        "clean_text": cleaned_texts
+        "plain_accuracy": plain_accuracy
+        "clean_accuracy": clean_accuracy
     }
 
-    return ocrd
+    return ocrd, low_accuracy_images
 
 
 def calculate_accuracy(string):
@@ -73,10 +93,22 @@ def calculate_accuracy(string):
     return (valid_count/max(1, len(string.split()))) #TO DO - LATER
 
 
-def update_ocr(df, ocr_model_path, threshold=0.85):
+def update_ocr(low_accuracy_images, ocr_model_path):
     """
     #for OCR accuracy values below a threshold, preprocess images to improve ocr and calculate accuracy metrics
     """
+    preprocessing_failures = []
+
+    try:
+        read_images = [read_image(img[0]) for img in low_accuracy_images]
+        inverted_images = [inversion(img) for img in read_images]
+        binarized_images = [binarized(img) for img in inverted_images]
+        upscaled_images = super_res(binarized_images, ocr_model_path)
+        eroded_images = [thin_font(img) for img in upscaled_images]
+        bordered_images = [add_borders(img) for img in eroded_images]
+    except:
+        preprocessing_failures.append(vacancy)
+        logging.error(f"Preprocessing Error") #TODO: outputs the specific image
 
     logging.info(f'Thresholding accuracy at {threshold}')
 
@@ -85,15 +117,33 @@ def update_ocr(df, ocr_model_path, threshold=0.85):
 
     logging.info(f'Out of {len(df)} images, {(num_images_below_threshold/len(df))* 100}% are below the accuracy threshold')
 
+    # ADD MULTIPLE COLUMNS THROUGH THE SAME LAMBDA FUNCTION WITHOUT LOOPING THROUGH SEVERAL TIMES
+
     # TODO: This is currently inefficient given that the code is looping through the all the images several times
     logging.info('Cleaning the images below the accuracy threshold..')
-    df['ocrd_text'] = df.apply(lambda x: extract_text_one_image(image_preprocessing.main(x['file_path'], ocr_model_path)) if (x['clean_accuracy'] < threshold) else x['ocrd_text'], axis=1)
-   
-    df['clean_text'] = df.apply(lambda x: strip_additional_characters(x['ocrd_text']) if (x['clean_accuracy'] < threshold) else x['clean_text'], axis=1)
     
-    df['plain_accuracy'] = df.apply(lambda x: calculate_accuracy(x['ocrd_text']) if (x['clean_accuracy'] < threshold) else x['plain_accuracy'], axis=1)
+    ocrd_text = []
+    cleaned_texts = []
+    plain_accuracy = []
+    clean_accuracy = [] 
+
+    for img in bordered_images:
+        text = extract_text_one_image(img)
+        stripped_text = strip_additional_characters(text)
+        plain_accuracy_image = calculate_accuracy(text)
+        clean_accuracy_image = calculate_accuracy(stripped_text)
+
+        ocrd_text.append(text)
+        cleaned_texts.append(stripped_text)
+        plain_accuracy.append(plain_accuracy_image)
+        clean_accuracy.append(clean_accuracy_image)
+
+    vacancy_id = [img[1] for img in low_accuracy_images]
+    file_path = [img[0] for img in low_accuracy_images]
     
-    df['clean_accuracy'] = df.apply(lambda x: calculate_accuracy(x['clean_text']) if (x['clean_accuracy'] < threshold) else x['clean_accuracy'], axis=1)
+    df = pd.DataFrame([vacancy_id, file_path, ocrd_text, cleaned_texts, plain_accuracy, clean_accuracy],
+                        columns=["vacancy_id", "file_path", "ocrd_text", "clean_text", "plain_accuracy", "clean_accuracy"])
+
 
     msk = df['clean_accuracy'] < threshold
     num_images_below_threshold_post_cleaning = len(df[msk])
@@ -106,20 +156,22 @@ def main(read_path, save_path, ocr_model_path):
     """ reads images from a directory and saves final ocr output to a csv"""
     #uses the ocr_extraction sub-module to conduct initial OCR and build a dataframe
     logging.info('Extracting text from images...')
-    text = extract_text_bulk(read_path)
-    ocr_df = pd.DataFrame(text, columns=["vacancy_id", "file_path", "ocrd_text"]) #insert column headers here
+    text, low_accuracy_images = extract_text_bulk(read_path, ocr_model_path)
+    ocr_df = pd.DataFrame(text, columns=["vacancy_id", "file_path", "ocrd_text", "clean_text", "plain_accuracy", "clean_accuracy"]) #insert column headers here
     
     #basic cleaning to strip additional characters 
-    logging.info('Cleaning the extracted text...')
-    ocr_df["clean_text"] = ocr_df["ocrd_text"].apply(strip_additional_characters)
+    #logging.info('Cleaning the extracted text...')
+    #ocr_df["clean_text"] = ocr_df["ocrd_text"].apply(strip_additional_characters)
     
     #evaluate ocr quality
-    logging.info('Evaluating accuracy of ocr quality')
-    ocr_df["plain_accuracy"] = ocr_df["ocrd_text"].apply(calculate_accuracy)
-    ocr_df["clean_accuracy"] = ocr_df["clean_text"].apply(calculate_accuracy)
+    #logging.info('Evaluating accuracy of ocr quality')
+    #ocr_df["plain_accuracy"] = ocr_df["ocrd_text"].apply(calculate_accuracy)
+    #ocr_df["clean_accuracy"] = ocr_df["clean_text"].apply(calculate_accuracy)
     
     #iteratre through the dataset, identify poor quality ocr, preprocess images & perform ocr again
-    ocr_df = update_ocr(ocr_df, ocr_model_path)
+    ocr_df_cleaned = update_ocr(low_accuracy_images, ocr_model_path)
+
+    ocr_df = ocr_df.merge(ocr_df_cleaned)
 
     #save the final dataframe to a csv
     ocr_df.to_csv(save_path, index=False)
