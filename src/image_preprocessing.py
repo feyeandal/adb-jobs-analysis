@@ -62,7 +62,7 @@ def inversion(img):
     else:
         return img
 
-def super_res(img, ocr_model_path):
+def super_res(images, ocr_model_path):
     """increase the image resolution using OpenCV's ESPCN deep learning model"""
     
     #Load the Lapsrn model
@@ -70,8 +70,10 @@ def super_res(img, ocr_model_path):
     sr.readModel(ocr_model_path)
     sr.setModel("espcn", 3)
 
+    super_res_images = [sr.upsample(img) for img in images]
+
     #upsample and return the image
-    return sr.upsample(img)
+    return super_res_images
 
 def grayscale(img): #binarization_1
     """grayscaling images"""
