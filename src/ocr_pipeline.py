@@ -157,7 +157,7 @@ def main(read_path, save_path, ocr_model_path):
     #uses the ocr_extraction sub-module to conduct initial OCR and build a dataframe
     logging.info('Extracting text from images...')
     text, low_accuracy_images = extract_text_bulk(read_path, ocr_model_path)
-    ocr_df = pd.DataFrame(text, orient="index", 
+    ocr_df = pd.DataFrame.from_dict(text, orient="index", 
                           columns=["vacancy_id", "file_path", "ocrd_text", "clean_text", "plain_accuracy", "clean_accuracy"]) #insert column headers here
     
     #basic cleaning to strip additional characters 
