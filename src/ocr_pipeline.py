@@ -70,9 +70,9 @@ def extract_text_bulk(folder_path, ocr_model_path, acc_threshold = 0.70):
     ocrd = {
         "vacancy_id": vacancies,
         "file_path": filepaths,
-        "ocrd_text": image2text
-        "clean_text": cleaned_texts
-        "plain_accuracy": plain_accuracy
+        "ocrd_text": image2text,
+        "clean_text": cleaned_texts,
+        "plain_accuracy": plain_accuracy,
         "clean_accuracy": clean_accuracy
     }
 
