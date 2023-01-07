@@ -171,6 +171,9 @@ def vectorize_sample(sample, tfidf_vect):
     sample_title = [unquote(str(title)) for title in sample.tj_title]
     sample_title = [re.sub('\+', ' ', title) for title in sample_title]
     sample_title_array = np.array(sample_title).reshape(1,-1)
+    print(sample_title_array.shape)
+    print(sample_title_array[0,3])
+    print(sample_title_array[0])
     sample_tfidf_title = tfidf_vect.transform(sample_title_array)
 
     # Generating tf-idf vectors for job descriptions of Topjpbs data extracted from images using OCR
