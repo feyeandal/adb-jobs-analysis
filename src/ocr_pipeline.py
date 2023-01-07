@@ -97,11 +97,13 @@ def update_ocr(low_accuracy_images, ocr_model_path):
     """
     #for OCR accuracy values below a threshold, preprocess images to improve ocr and calculate accuracy metrics
     """
+    logging.info("Preprocessing Images")
+
     preprocessing_failures = []
 
     read_images = [ip.read_image(img[0]) for img in low_accuracy_images]
     inverted_images = [ip.inversion(img) for img in read_images]
-    binarized_images = [ip.binarized(img) for img in inverted_images]
+    binarized_images = [ip.grayscale(img) for img in inverted_images]
     upscaled_images = super_res(ip.binarized_images, ocr_model_path)
     eroded_images = [ip.thin_font(img) for img in upscaled_images]
     bordered_images = [ip.add_borders(img) for img in eroded_images]
