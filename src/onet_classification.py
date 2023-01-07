@@ -170,11 +170,11 @@ def vectorize_sample(sample, tfidf_vect):
     # Generating tf-idf vectors for job titles of Topjpbs data
     sample_title = [unquote(str(title)) for title in sample.tj_title]
     sample_title = [re.sub('\+', ' ', title) for title in sample_title]
-    sample_tfidf_title = tfidf_vect.transform(sample_title)
+    sample_tfidf_title = tfidf_vect.transform(np.array(sample_title))
 
     # Generating tf-idf vectors for job descriptions of Topjpbs data extracted from images using OCR
     sample_desc = sample.tj_desc
-    sample_tfidf_desc = tfidf_vect.transform(np.array(sample_desc))
+    sample_tfidf_desc = tfidf_vect.transform(sample_desc)
 
     return sample_tfidf_title, sample_tfidf_desc
 
