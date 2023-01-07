@@ -175,6 +175,9 @@ def main(read_path, save_path, ocr_model_path, acc_threshold):
 
     ocr_df = ocr_df.merge(ocr_df_cleaned)
 
+    print(ocr_df.shape)
+    print(ocr_df.head())
+
     #save the final dataframe to a csv
     ocr_df.to_csv(save_path, index=False)
     
