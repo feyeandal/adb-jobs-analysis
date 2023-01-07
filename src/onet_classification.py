@@ -167,6 +167,9 @@ def create_tf_idf_vector(onet_corpus):
 def vectorize_sample(sample, tfidf_vect):
     '''Generates tf-idf vectors for the data sample.'''
 
+    print(sample.shape)
+    print(sample.head())
+
     # Generating tf-idf vectors for job titles of Topjpbs data
     sample_title = [unquote(str(title)) for title in sample.tj_title]
     sample_title = [re.sub('\+', ' ', title) for title in sample_title]
