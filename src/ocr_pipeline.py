@@ -139,8 +139,8 @@ def update_ocr(low_accuracy_images, ocr_model_path, acc_threshold):
     vacancy_id = [img[1] for img in low_accuracy_images]
     file_path = [img[0] for img in low_accuracy_images]
     
-    df = pd.DataFrame([vacancy_id, file_path, ocrd_text, cleaned_texts, plain_accuracy, clean_accuracy],
-                        columns=["vacancy_id", "file_path", "ocrd_text", "clean_text", "plain_accuracy", "clean_accuracy"])
+    df = pd.DataFrame([vacancy_id, file_path, ocrd_text, cleaned_texts, plain_accuracy, clean_accuracy]).transpose()
+    df.columns = columns=["vacancy_id", "file_path", "ocrd_text", "clean_text", "plain_accuracy", "clean_accuracy"]
 
 
     msk = df['clean_accuracy'] < acc_threshold
