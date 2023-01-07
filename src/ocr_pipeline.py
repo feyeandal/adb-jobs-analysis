@@ -67,6 +67,8 @@ def extract_text_bulk(folder_path, acc_threshold):
             tesseract_failures.append(vacancy)
             logging.error(f"Tesseract Failure: {vacancy}")   
     
+    logging.info(f'Out of {len(all_images)} images, {(len(low_accuracy_images)/len(all_images))* 100}% are below the accuracy threshold')
+
     ocrd = {
         "vacancy_id": vacancies,
         "file_path": filepaths,
@@ -108,17 +110,15 @@ def update_ocr(low_accuracy_images, ocr_model_path, acc_threshold):
     eroded_images = [ip.thin_font(img) for img in upscaled_images]
     bordered_images = [ip.add_borders(img) for img in eroded_images]
 
-    logging.info(f'Thresholding accuracy at {acc_threshold}')
+    # logging.info(f'Thresholding accuracy at {acc_threshold}')
 
-    msk = df['clean_accuracy'] < acc_threshold
-    num_images_below_threshold = len(df[msk])
+    # msk = df['clean_accuracy'] < acc_threshold
+    # num_images_below_threshold = len(df[msk])
 
-    logging.info(f'Out of {len(df)} images, {(num_images_below_threshold/len(df))* 100}% are below the accuracy threshold')
+    # # ADD MULTIPLE COLUMNS THROUGH THE SAME LAMBDA FUNCTION WITHOUT LOOPING THROUGH SEVERAL TIMES
 
-    # ADD MULTIPLE COLUMNS THROUGH THE SAME LAMBDA FUNCTION WITHOUT LOOPING THROUGH SEVERAL TIMES
-
-    # TODO: This is currently inefficient given that the code is looping through the all the images several times
-    logging.info('Cleaning the images below the accuracy threshold..')
+    # # TODO: This is currently inefficient given that the code is looping through the all the images several times
+    # logging.info('Cleaning the images below the accuracy threshold..')
     
     ocrd_text = []
     cleaned_texts = []
@@ -167,6 +167,8 @@ def main(read_path, save_path, ocr_model_path, acc_threshold):
     #logging.info('Evaluating accuracy of ocr quality')
     #ocr_df["plain_accuracy"] = ocr_df["ocrd_text"].apply(calculate_accuracy)
     #ocr_df["clean_accuracy"] = ocr_df["clean_text"].apply(calculate_accuracy)
+
+
     
     #iteratre through the dataset, identify poor quality ocr, preprocess images & perform ocr again
     ocr_df_cleaned = update_ocr(low_accuracy_images, ocr_model_path, acc_threshold)
