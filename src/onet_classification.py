@@ -260,8 +260,13 @@ def main(data_path, occ_path, alt_path, tech_path, ocr_output_path, lockdown_dat
     logging.info('Reading onet data')
     onet_data = read_onet_data(occ_path, alt_path, tech_path)
 
+    print(type(onet_data))
+
     logging.info('Reading topjobs data')
     sample = read_topjobs_data(data_path)
+
+    print(sample.shape)
+    print(sample.head())
 
     logging.info('Appending ocr output')
     sample = append_ocr_output(ocr_output_path, sample)
