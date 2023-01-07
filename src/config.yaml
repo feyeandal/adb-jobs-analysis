@@ -48,3 +48,6 @@ embedding_model: "universal-sentence-encoder"
 
 # Text Column used for Top2Vec topic modelling
 text_column_name: "clean_text"
+
+# Accuracy Threshold to trigger image preprocessing
+accuracy_threshold: 0.7

@@ -15,7 +15,7 @@ def extract_text_one_image(image_path):
 
 
  #change the declaration location 
-def extract_text_bulk(folder_path, ocr_model_path, acc_threshold = 0.70):
+def extract_text_bulk(folder_path, acc_threshold):
     """ Extracts text from all images in a given directory
     args:
         folder_path (str): absolute path for the folder
@@ -93,7 +93,7 @@ def calculate_accuracy(string):
     return (valid_count/max(1, len(string.split()))) #TO DO - LATER
 
 
-def update_ocr(low_accuracy_images, ocr_model_path):
+def update_ocr(low_accuracy_images, ocr_model_path, acc_threshold):
     """
     #for OCR accuracy values below a threshold, preprocess images to improve ocr and calculate accuracy metrics
     """
@@ -104,13 +104,13 @@ def update_ocr(low_accuracy_images, ocr_model_path):
     read_images = [ip.read_image(img[0]) for img in low_accuracy_images]
     inverted_images = [ip.inversion(img) for img in read_images]
     binarized_images = [ip.grayscale(img) for img in inverted_images]
-    upscaled_images = super_res(ip.binarized_images, ocr_model_path)
+    upscaled_images = ip.super_res(binarized_images, ocr_model_path)
     eroded_images = [ip.thin_font(img) for img in upscaled_images]
     bordered_images = [ip.add_borders(img) for img in eroded_images]
 
-    logging.info(f'Thresholding accuracy at {threshold}')
+    logging.info(f'Thresholding accuracy at {acc_threshold}')
 
-    msk = df['clean_accuracy'] < threshold
+    msk = df['clean_accuracy'] < acc_threshold
     num_images_below_threshold = len(df[msk])
 
     logging.info(f'Out of {len(df)} images, {(num_images_below_threshold/len(df))* 100}% are below the accuracy threshold')
@@ -143,18 +143,18 @@ def update_ocr(low_accuracy_images, ocr_model_path):
                         columns=["vacancy_id", "file_path", "ocrd_text", "clean_text", "plain_accuracy", "clean_accuracy"])
 
 
-    msk = df['clean_accuracy'] < threshold
+    msk = df['clean_accuracy'] < acc_threshold
     num_images_below_threshold_post_cleaning = len(df[msk])
     logging.info(f'Post cleaning, {(num_images_below_threshold_post_cleaning/len(df)) * 100}% images below threshold')
 
     return df
 
 
-def main(read_path, save_path, ocr_model_path):
+def main(read_path, save_path, ocr_model_path, acc_threshold):
     """ reads images from a directory and saves final ocr output to a csv"""
     #uses the ocr_extraction sub-module to conduct initial OCR and build a dataframe
     logging.info('Extracting text from images...')
-    text, low_accuracy_images = extract_text_bulk(read_path, ocr_model_path)
+    text, low_accuracy_images = extract_text_bulk(read_path, acc_threshold)
     ocr_df = pd.DataFrame.from_dict(text, orient="index" 
                         #   columns=["vacancy_id", "file_path", "ocrd_text", "clean_text", "plain_accuracy", "clean_accuracy"]
                         ).transpose() #insert column headers here
@@ -169,7 +169,7 @@ def main(read_path, save_path, ocr_model_path):
     #ocr_df["clean_accuracy"] = ocr_df["clean_text"].apply(calculate_accuracy)
     
     #iteratre through the dataset, identify poor quality ocr, preprocess images & perform ocr again
-    ocr_df_cleaned = update_ocr(low_accuracy_images, ocr_model_path)
+    ocr_df_cleaned = update_ocr(low_accuracy_images, ocr_model_path, acc_threshold)
 
     ocr_df = ocr_df.merge(ocr_df_cleaned)
 

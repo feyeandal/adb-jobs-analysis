@@ -3,6 +3,7 @@ import math
 import cv2
 import numpy as np
 from sklearn.cluster import KMeans
+import logging
 
 def read_image(img_path):
     """Read image when image path is given"""

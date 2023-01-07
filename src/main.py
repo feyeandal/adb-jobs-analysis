@@ -31,7 +31,8 @@ def run(config_file_path):
     ocr_df = ocr_pipeline.main(
         read_path=config['image_path'],
         save_path=config['ocr_output_path'],
-        ocr_model_path=config['ocr_model_path']
+        ocr_model_path=config['ocr_model_path'],
+        acc_threshold=config['accuracy_threshold']
     )    
 
     logging.info('OCR pipeline completed successfully! Starting classifying images to onet categories')
