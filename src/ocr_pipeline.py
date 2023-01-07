@@ -5,7 +5,7 @@ import pandas as pd
 import logging
 import enchant
 import pytesseract
-import image_preprocessing
+import image_preprocessing as ip
 from text_preprocessing import strip_additional_characters, get_special_chars
  
 
@@ -99,12 +99,12 @@ def update_ocr(low_accuracy_images, ocr_model_path):
     """
     preprocessing_failures = []
 
-    read_images = [read_image(img[0]) for img in low_accuracy_images]
-    inverted_images = [inversion(img) for img in read_images]
-    binarized_images = [binarized(img) for img in inverted_images]
-    upscaled_images = super_res(binarized_images, ocr_model_path)
-    eroded_images = [thin_font(img) for img in upscaled_images]
-    bordered_images = [add_borders(img) for img in eroded_images]
+    read_images = [ip.read_image(img[0]) for img in low_accuracy_images]
+    inverted_images = [ip.inversion(img) for img in read_images]
+    binarized_images = [ip.binarized(img) for img in inverted_images]
+    upscaled_images = super_res(ip.binarized_images, ocr_model_path)
+    eroded_images = [ip.thin_font(img) for img in upscaled_images]
+    bordered_images = [ip.add_borders(img) for img in eroded_images]
 
     logging.info(f'Thresholding accuracy at {threshold}')
 
