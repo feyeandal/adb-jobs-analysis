@@ -57,75 +57,100 @@ def inversion(img):
     if an image has light text on dark background,
     inverts to get dark text on light background
     """
-    if is_dark(img):
-        return cv2.bitwise_not(img)
-    else:
-        return img
+    try:
+        if is_dark(img):
+            return cv2.bitwise_not(img)
+        else:
+            return img
+    except:
+        logging.error("Inversion failure. Moving on to the next image")
 
 def super_res(images, ocr_model_path):
     """increase the image resolution using OpenCV's ESPCN deep learning model"""
-    
-    #Load the Lapsrn model
-    sr = cv2.dnn_superres.DnnSuperResImpl_create()
-    sr.readModel(ocr_model_path)
-    sr.setModel("espcn", 3)
 
-    super_res_images = [sr.upsample(img) for img in images]
+    try:
+        #Load the Lapsrn model
+        sr = cv2.dnn_superres.DnnSuperResImpl_create()
+        sr.readModel(ocr_model_path)
+        sr.setModel("espcn", 3)
 
-    #upsample and return the image
-    return super_res_images
+        super_res_images = [sr.upsample(img) for img in images]
+
+        #upsample and return the image
+        return super_res_images
+    except:
+        logging.error("Super resolution failure. Moving on to the next image")
 
 def grayscale(img): #binarization_1
     """grayscaling images"""
-    return cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    try:
+        return cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    except:
+        logging.error("Grayscaling failure. Moving on to the next image")
 
 def blackwhite(gray_image): #binarization_2
     """making images black and white"""
-    thresh, im_bw = cv2.threshold(gray_image, 210, 230, cv2.THRESH_BINARY)
-    return im_bw
+    try:
+        thresh, im_bw = cv2.threshold(gray_image, 210, 230, cv2.THRESH_BINARY)
+        return im_bw
+    except:
+        logging.error("Binarization failure. Moving on to the next image")
     
 def noise_removal(image): #feed im_bw"
     """removes image noise"""
-    kernel = np.ones((1, 1), np.uint8)
-    image = cv2.dilate(image, kernel, iterations=1)
-    kernel = np.ones((1, 1), np.uint8)
-    image = cv2.erode(image, kernel, iterations=1)
-    image = cv2.morphologyEx(image, cv2.MORPH_CLOSE, kernel)
-    image = cv2.medianBlur(image, 3)
-    return (image)
+    try:
+        kernel = np.ones((1, 1), np.uint8)
+        image = cv2.dilate(image, kernel, iterations=1)
+        kernel = np.ones((1, 1), np.uint8)
+        image = cv2.erode(image, kernel, iterations=1)
+        image = cv2.morphologyEx(image, cv2.MORPH_CLOSE, kernel)
+        image = cv2.medianBlur(image, 3)
+        return (image)
+    except:
+        logging.error("Noise removal failure. Moving on to the next image")
 
 def thin_font(image):
     """makes bold fonts thinner - known as erosion"""
-    import numpy as np
-    image = cv2.bitwise_not(image)
-    kernel = np.ones((2,2),np.uint8)
-    image = cv2.erode(image, kernel, iterations=1)
-    image = cv2.bitwise_not(image)
-    return image
+    try:
+        image = cv2.bitwise_not(image)
+        kernel = np.ones((2,2),np.uint8)
+        image = cv2.erode(image, kernel, iterations=1)
+        image = cv2.bitwise_not(image)
+        return image
+    except:
+        logging.error("Thinning font failure. Moving on to the next image")
 
 def thick_font(image):
     """makes faint fonts bolder - known as dilation"""
-    import numpy as np
-    image = cv2.bitwise_not(image)
-    kernel = np.ones((2,2),np.uint8)
-    image = cv2.dilate(image, kernel, iterations=1)
-    image = cv2.bitwise_not(image)
-    return (image)
+    try:
+        image = cv2.bitwise_not(image)
+        kernel = np.ones((2,2),np.uint8)
+        image = cv2.dilate(image, kernel, iterations=1)
+        image = cv2.bitwise_not(image)
+        return (image)
+    except:
+        logging.error("Thickening font failure. Moving on to the next image")
 
 def remove_borders(image):
     """removes borders from images"""
-    contours, heiarchy = cv2.findContours(image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    cntsSorted = sorted(contours, key=lambda x:cv2.contourArea(x))
-    cnt = cntsSorted[-1]
-    x, y, w, h = cv2.boundingRect(cnt)
-    crop = image[y:y+h, x:x+w]
-    return (crop)
+    try:
+        contours, heiarchy = cv2.findContours(image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        cntsSorted = sorted(contours, key=lambda x:cv2.contourArea(x))
+        cnt = cntsSorted[-1]
+        x, y, w, h = cv2.boundingRect(cnt)
+        crop = image[y:y+h, x:x+w]
+        return (crop)
+    except:
+        logging.error("Border removal failure. Moving on to the next image")
 
 def add_borders(image):
     """expands the edges, incase the letters start too close to the edge"""
-    color = [255, 255, 255]
-    top, bottom, left, right = [250]*4
-    return cv2.copyMakeBorder(image, top, bottom, left, right, cv2.BORDER_CONSTANT, value=color)
+    try:
+        color = [255, 255, 255]
+        top, bottom, left, right = [250]*4
+        return cv2.copyMakeBorder(image, top, bottom, left, right, cv2.BORDER_CONSTANT, value=color)
+    except:
+        logging.error("Border addition failure. Moving on to the next image")
 
 def main(img_path, ocr_model_path):
     """sequences the image preprocessing steps into a processing chain"""

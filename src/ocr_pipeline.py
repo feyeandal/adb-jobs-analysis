@@ -99,16 +99,12 @@ def update_ocr(low_accuracy_images, ocr_model_path):
     """
     preprocessing_failures = []
 
-    try:
-        read_images = [read_image(img[0]) for img in low_accuracy_images]
-        inverted_images = [inversion(img) for img in read_images]
-        binarized_images = [binarized(img) for img in inverted_images]
-        upscaled_images = super_res(binarized_images, ocr_model_path)
-        eroded_images = [thin_font(img) for img in upscaled_images]
-        bordered_images = [add_borders(img) for img in eroded_images]
-    except:
-        preprocessing_failures.append(vacancy)
-        logging.error(f"Preprocessing Error") #TODO: outputs the specific image
+    read_images = [read_image(img[0]) for img in low_accuracy_images]
+    inverted_images = [inversion(img) for img in read_images]
+    binarized_images = [binarized(img) for img in inverted_images]
+    upscaled_images = super_res(binarized_images, ocr_model_path)
+    eroded_images = [thin_font(img) for img in upscaled_images]
+    bordered_images = [add_borders(img) for img in eroded_images]
 
     logging.info(f'Thresholding accuracy at {threshold}')
 
