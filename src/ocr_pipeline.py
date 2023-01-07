@@ -158,6 +158,9 @@ def main(read_path, save_path, ocr_model_path, acc_threshold):
     ocr_df = pd.DataFrame.from_dict(text, orient="index" 
                         #   columns=["vacancy_id", "file_path", "ocrd_text", "clean_text", "plain_accuracy", "clean_accuracy"]
                         ).transpose() #insert column headers here
+
+    print(ocr_df.head(3))
+    print(ocr_df.shape)
     
     #basic cleaning to strip additional characters 
     #logging.info('Cleaning the extracted text...')
@@ -172,6 +175,8 @@ def main(read_path, save_path, ocr_model_path, acc_threshold):
     
     #iteratre through the dataset, identify poor quality ocr, preprocess images & perform ocr again
     ocr_df_cleaned = update_ocr(low_accuracy_images, ocr_model_path, acc_threshold)
+
+    print(ocr_df.shape)
 
     ocr_df = ocr_df.merge(ocr_df_cleaned)
 
