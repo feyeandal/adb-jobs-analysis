@@ -185,7 +185,7 @@ def main(read_path, save_path, ocr_model_path, acc_threshold):
     print("_____")
     print("/n")
 
-    ocr_df = pd.concat([ocr_df, ocr_df_cleaned]).reset_index()
+    ocr_df = pd.concat([ocr_df, ocr_df_cleaned]).reset_index(drop=True)
 
     print(ocr_df.shape)
     print(ocr_df.head())
