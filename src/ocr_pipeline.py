@@ -161,6 +161,11 @@ def main(read_path, save_path, ocr_model_path, acc_threshold):
 
     print(ocr_df.head(3))
     print(ocr_df.shape)
+
+    print("/n")
+    print("_____")
+    print("/n")
+
     
     #basic cleaning to strip additional characters 
     #logging.info('Cleaning the extracted text...')
@@ -176,7 +181,11 @@ def main(read_path, save_path, ocr_model_path, acc_threshold):
 
     print(ocr_df_cleaned.shape)
 
-    ocr_df = ocr_df.merge(ocr_df_cleaned)
+    print("/n")
+    print("_____")
+    print("/n")
+
+    ocr_df = pd.concat([ocr_df, ocr_df_cleaned]).reset_index()
 
     print(ocr_df.shape)
     print(ocr_df.head())
