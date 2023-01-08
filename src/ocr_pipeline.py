@@ -170,13 +170,11 @@ def main(read_path, save_path, ocr_model_path, acc_threshold):
     #logging.info('Evaluating accuracy of ocr quality')
     #ocr_df["plain_accuracy"] = ocr_df["ocrd_text"].apply(calculate_accuracy)
     #ocr_df["clean_accuracy"] = ocr_df["clean_text"].apply(calculate_accuracy)
-
-
     
     #iteratre through the dataset, identify poor quality ocr, preprocess images & perform ocr again
     ocr_df_cleaned = update_ocr(low_accuracy_images, ocr_model_path, acc_threshold)
 
-    print(ocr_df.shape)
+    print(ocr_df_cleaned.shape)
 
     ocr_df = ocr_df.merge(ocr_df_cleaned)
 
