@@ -54,7 +54,6 @@ def extract_text_bulk(folder_path, acc_threshold):
                 low_accuracy_images.append((image_path, vacancy))
 
             else:
-            
                 cleaned_texts.append(stripped_text)
                 plain_accuracy.append(plain_accuracy_image)
                 clean_accuracy.append(clean_accuracy_image)
@@ -62,8 +61,6 @@ def extract_text_bulk(folder_path, acc_threshold):
                 filepaths.append(image_path)
                 vacancies.append(vacancy.split(".")[0])
                 image2text.append(text)
-                stripped_text = strip_additional_characters(text)
-                cleaned_texts.append(strip_additional_characters(text))
 
         except: #TODO Catch a specific exception
             tesseract_failures.append(vacancy)
