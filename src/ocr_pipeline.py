@@ -69,7 +69,7 @@ def extract_text_bulk(folder_path, acc_threshold):
     logging.info(f'Out of {num_images} images, {(len(low_accuracy_images)/num_images)* 100}% are below the accuracy threshold')
 
     ocrd = {
-        "vacancy_id": vacancies,
+        "job_code": vacancies,
         "file_path": filepaths,
         "ocrd_text": image2text,
         "clean_text": cleaned_texts,
@@ -135,11 +135,11 @@ def update_ocr(low_accuracy_images, ocr_model_path, acc_threshold):
         plain_accuracy.append(plain_accuracy_image)
         clean_accuracy.append(clean_accuracy_image)
 
-    vacancy_id = [img[1] for img in low_accuracy_images]
+    job_code = [img[1] for img in low_accuracy_images]
     file_path = [img[0] for img in low_accuracy_images]
     
-    df = pd.DataFrame([vacancy_id, file_path, ocrd_text, cleaned_texts, plain_accuracy, clean_accuracy]).transpose()
-    df.columns = columns=["vacancy_id", "file_path", "ocrd_text", "clean_text", "plain_accuracy", "clean_accuracy"]
+    df = pd.DataFrame([job_code, file_path, ocrd_text, cleaned_texts, plain_accuracy, clean_accuracy]).transpose()
+    df.columns = ["job_code", "file_path", "ocrd_text", "clean_text", "plain_accuracy", "clean_accuracy"]
 
 
     msk = df['clean_accuracy'] < acc_threshold
