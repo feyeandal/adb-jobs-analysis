@@ -82,6 +82,6 @@ def main(matches_path, tags_path):
     if data_sample_for_eval is not None:
         matches, confusion_matrix = evaluate_matches(data_sample_for_eval)
     else:
-        confusion_matrix = None
+        matches, confusion_matrix = None, None
 
-    return (matches,confusion_matrix)
+    return (matches, confusion_matrix)
