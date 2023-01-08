@@ -135,7 +135,7 @@ def update_ocr(low_accuracy_images, ocr_model_path, acc_threshold):
         plain_accuracy.append(plain_accuracy_image)
         clean_accuracy.append(clean_accuracy_image)
 
-    job_code = [img[1] for img in low_accuracy_images]
+    job_code = [img[1].split(".")[0] for img in low_accuracy_images]
     file_path = [img[0] for img in low_accuracy_images]
     
     df = pd.DataFrame([job_code, file_path, ocrd_text, cleaned_texts, plain_accuracy, clean_accuracy]).transpose()
@@ -162,11 +162,6 @@ def main(read_path, save_path, ocr_model_path, acc_threshold):
 
     print(ocr_df.head(3))
     print(ocr_df.shape)
-
-    print("/n")
-    print("_____")
-    print("/n")
-
     
     #basic cleaning to strip additional characters 
     #logging.info('Cleaning the extracted text...')
@@ -181,10 +176,6 @@ def main(read_path, save_path, ocr_model_path, acc_threshold):
     ocr_df_cleaned = update_ocr(low_accuracy_images, ocr_model_path, acc_threshold)
 
     print(ocr_df_cleaned.shape)
-
-    print("/n")
-    print("_____")
-    print("/n")
 
     ocr_df = pd.concat([ocr_df, ocr_df_cleaned]).reset_index(drop=True)
 
