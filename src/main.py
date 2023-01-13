@@ -26,28 +26,28 @@ def run(config_file_path):
     logging.info('Reading the config file')
     config = read_config_file(config_file_path)
    
-    logging.info('Running the OCR pipeline')
+    # logging.info('Running the OCR pipeline')
 
-    ocr_df = ocr_pipeline.main(
-        read_path=config['image_path'],
-        save_path=config['ocr_output_path'],
-        ocr_model_path=config['ocr_model_path'],
-        acc_threshold=config['accuracy_threshold']
-    )    
+    # ocr_df = ocr_pipeline.main(
+    #     read_path=config['image_path'],
+    #     save_path=config['ocr_output_path'],
+    #     ocr_model_path=config['ocr_model_path'],
+    #     acc_threshold=config['accuracy_threshold']
+    # )    
 
-    logging.info('OCR pipeline completed successfully! Starting classifying images to onet categories')
+    # logging.info('OCR pipeline completed successfully! Starting classifying images to onet categories')
 
-    matches = onet_classification.main(
-        data_path=config['data_path'],
-        occ_path=config['occ_path'],
-        alt_path=config['alt_path'],
-        tech_path=config['tech_path'],
-        ocr_output_path=config['ocr_output_path'],
-        lockdown_date_range=config['lockdown_date_range'],
-        # embedding_model=config['embedding_model'],
-        onet_corpus_path=config['onet_corpus_path'],
-        matches_path=config['matches_path']
-    )
+    # matches = onet_classification.main(
+    #     data_path=config['data_path'],
+    #     occ_path=config['occ_path'],
+    #     alt_path=config['alt_path'],
+    #     tech_path=config['tech_path'],
+    #     ocr_output_path=config['ocr_output_path'],
+    #     lockdown_date_range=config['lockdown_date_range'],
+    #     # embedding_model=config['embedding_model'],
+    #     onet_corpus_path=config['onet_corpus_path'],
+    #     matches_path=config['matches_path']
+    # )
 
     matches,confusion_matrix = onet_evaluation.main(
         matches_path=config['matches_path'],
