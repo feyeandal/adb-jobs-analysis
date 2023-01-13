@@ -49,17 +49,17 @@ def run(config_file_path):
     #     matches_path=config['matches_path']
     # )
 
-    matches,confusion_matrix = onet_evaluation.main(
-        matches_path=config['matches_path'],
-        tags_path=config['tags_path']
-    )
+    # matches,confusion_matrix = onet_evaluation.main(
+    #     matches_path=config['matches_path'],
+    #     tags_path=config['tags_path']
+    # )
 
-    logging.info('Classification into ONET categories completed! Starting the skills analyses scripts')
+    # logging.info('Classification into ONET categories completed! Starting the skills analyses scripts')
 
 
-    skills_analysis.main(
-        ocr_output_path=config['ocr_output_path']
-    )
+    # skills_analysis.main(
+    #     ocr_output_path=config['ocr_output_path']
+    # )
 
     topic_modeling_top2vec.main(
         ocr_output_path=config['ocr_output_path'], 
