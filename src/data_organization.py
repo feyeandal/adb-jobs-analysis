@@ -21,7 +21,7 @@ def run(config_file_path):
 
     for year in years:
         for index, sector in enumerate(sectors):
-            # Filter the data frame bysector based on the two for loops
+            # Filter the data frame by the desired sector based on the config file
             df_sector = df[df["functional_area"]==sector].copy()
 
             # Get a full list of images from the folder containing the relevant year
@@ -34,7 +34,7 @@ def run(config_file_path):
             df_sector_year = df_sector[df_sector['job_code'].isin(job_code_list)].copy()
 
             # create array to conduct the intersect1D operation with numpy
-            img_list_array = np.array(full_img_list)
+            #img_list_array = np.array(full_img_list)
             job_code_array = np.array(job_code_list)
 
             # get the intersection and save the output in a list of images for the relevant sector and the year
