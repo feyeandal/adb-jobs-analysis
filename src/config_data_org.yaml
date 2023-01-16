@@ -1,0 +1,24 @@
+---
+# image_path: "/home/kasun/projects/adb-jobs-analysis/data/cs_2020_archived"
+image_path: "/home/kasun/projects/adb-jobs-analysis/data/image_sample"
+
+# Path to the Topjobs metadata corpus
+data_path: "/home/kasun/projects/adb-jobs-analysis/data/data_full.xlsx"
+
+# Date range during which lockdown was implemented (ASSUMPTION: All dates beyond 2020-03-01 are considered to be under lockdown)
+list_of_years: [
+  "2019",
+  "2020"
+]
+
+# List of economic sectors being studied
+list_of_sectors: [
+  "IT-Sware/DB/QA/Web/Graphics/GIS",
+  "Hospitality/Tourism"
+]
+
+# Acronyms for those sectors
+sector_acronyms: [
+  "cs",
+  "tourism"
+]
