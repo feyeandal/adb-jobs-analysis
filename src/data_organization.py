@@ -25,7 +25,7 @@ def run(config_file_path):
             df_sector = df[df["functional_area"]==sector].copy()
 
             # Get a full list of images from the folder containing the relevant year
-            full_img_list = os.listdir(os.path.join(image_path, year))
+            full_img_list = [item.name for item in os.scandir(os.path.join(image_path, year)) if item.is_file()]
 
             # # Get the job code list for matching purposes from the image list
             # job_code_list = [int(img.split(".")[0]) for img in full_img_list]
