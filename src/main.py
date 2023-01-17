@@ -26,16 +26,16 @@ def run(config_file_path):
     logging.info('Reading the config file')
     config = read_config_file(config_file_path)
    
-    # logging.info('Running the OCR pipeline')
+    logging.info('Running the OCR pipeline')
 
-    # ocr_df = ocr_pipeline.main(
-    #     read_path=config['image_path'],
-    #     save_path=config['ocr_output_path'],
-    #     ocr_model_path=config['ocr_model_path'],
-    #     acc_threshold=config['accuracy_threshold']
-    # )    
+    ocr_df = ocr_pipeline.main(
+        read_path=config['image_path'],
+        save_path=config['ocr_output_path'],
+        ocr_model_path=config['ocr_model_path'],
+        acc_threshold=config['accuracy_threshold']
+    )    
 
-    # logging.info('OCR pipeline completed successfully! Starting classifying images to onet categories')
+    logging.info('OCR pipeline completed successfully! Starting classifying images to onet categories')
 
     # matches = onet_classification.main(
     #     data_path=config['data_path'],
@@ -49,10 +49,10 @@ def run(config_file_path):
     #     matches_path=config['matches_path']
     # )
 
-    matches, confusion_matrix = onet_evaluation.main(
-        matches_path=config['matches_path'],
-        tags_path=config['tags_path']
-    )
+    # matches, confusion_matrix = onet_evaluation.main(
+    #     matches_path=config['matches_path'],
+    #     tags_path=config['tags_path']
+    # )
 
     # logging.info('Classification into ONET categories completed! Starting the skills analyses scripts')
 
@@ -68,7 +68,7 @@ def run(config_file_path):
     #     embedding_model=config['embedding_model']
     # )
 
-    # return ocr_df, matches, confusion_matrix
+    #return ocr_df, matches, confusion_matrix
 
 
 if __name__ == '__main__':
