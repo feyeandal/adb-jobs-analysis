@@ -46,7 +46,7 @@ def run(config_file_path):
             os.mkdir(new_directory)
 
             # conduct the copy operation
-            for img in sector_year_img_list[:100]:
+            for img in sector_year_img_list:
                 src_file = os.path.join(image_path, year, img)
                 dst_file = os.path.join(image_path, year, sec_shorts[index], img)
                 # copy + Paste to the relevant folder
