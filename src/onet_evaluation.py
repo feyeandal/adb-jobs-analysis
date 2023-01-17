@@ -62,7 +62,7 @@ def evaluate_matches(matches):
         matches.loc[job, 'first_tag_family'] = str(tag_families[0])
 
         # Question: What does this line do? It's already an integer?  
-        matches.loc[job, 'match_value'] = [int(x) if x is not None else 0 for x in tag_families]
+        matches.loc[job, 'match_value'] = tag_families[0]
 
     matches.groupby(['wfh_status', 'lockdown_status']).size()
 
