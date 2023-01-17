@@ -68,7 +68,7 @@ def run(config_file_path):
     #     embedding_model=config['embedding_model']
     # )
 
-    #return ocr_df, matches, confusion_matrix
+    # return ocr_df, matches, confusion_matrix
 
 
 if __name__ == '__main__':
