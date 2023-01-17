@@ -49,7 +49,7 @@ def run(config_file_path):
     #     matches_path=config['matches_path']
     # )
 
-    matches,confusion_matrix = onet_evaluation.main(
+    matches, confusion_matrix = onet_evaluation.main(
         matches_path=config['matches_path'],
         tags_path=config['tags_path']
     )

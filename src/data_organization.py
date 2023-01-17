@@ -21,7 +21,7 @@ def run(config_file_path):
 
     for year in years:
         for index, sector in enumerate(sectors):
-            # Filter the data frame by the desired sector based on the config file
+            # Filter the data frame by the desired sectors as given in the config file
             df_sector = df[df["functional_area"]==sector].copy()
 
             # Get a full list of images from the folder containing the relevant year
@@ -40,6 +40,10 @@ def run(config_file_path):
             # get the intersection and save the output in a list of images for the relevant sector and the year
             intersect_list = list(np.intersect1d(job_code_array, np.array(df_sector_year['job_code'])))
             sector_year_img_list = [img for img in full_img_list if int(img.split(".")[0]) in intersect_list]
+
+            # create the relevant sectoral folder within the year folder
+            new_directory = f"{os.path.join(image_path, year)}/sec_shorts[index]"
+            os.mkdir(new_directory)
 
             # conduct the copy operation
             for img in sector_year_img_list:
