@@ -144,9 +144,8 @@ def update_ocr(low_accuracy_images, ocr_model_path, acc_threshold):
 
     msk = df['clean_accuracy'] < acc_threshold
     num_images_below_threshold_post_cleaning = len(df[msk])
-    logging.info(f'Post cleaning, {(num_images_below_threshold_post_cleaning/len(df)) * 100}% images below threshold')
 
-    return df
+    return df, num_images_below_threshold_post_cleaning
 
 
 def main(read_path, save_path, ocr_model_path, acc_threshold):
@@ -160,7 +159,6 @@ def main(read_path, save_path, ocr_model_path, acc_threshold):
                         #   columns=["vacancy_id", "file_path", "ocrd_text", "clean_text", "plain_accuracy", "clean_accuracy"]
                         ).transpose() #insert column headers here
 
-    print(ocr_df.head(3))
     print(ocr_df.shape)
     
     #basic cleaning to strip additional characters 
@@ -173,14 +171,15 @@ def main(read_path, save_path, ocr_model_path, acc_threshold):
     #ocr_df["clean_accuracy"] = ocr_df["clean_text"].apply(calculate_accuracy)
     
     #iteratre through the dataset, identify poor quality ocr, preprocess images & perform ocr again
-    ocr_df_cleaned = update_ocr(low_accuracy_images, ocr_model_path, acc_threshold)
+    ocr_df_cleaned, num_images_below_threshold_post_cleaning = update_ocr(low_accuracy_images, ocr_model_path, acc_threshold)
 
     print(ocr_df_cleaned.shape)
 
     ocr_df = pd.concat([ocr_df, ocr_df_cleaned]).reset_index(drop=True)
 
+    logging.info(f'Post cleaning, {(num_images_below_threshold_post_cleaning/ocr_df.shape[0]) * 100}% images below threshold')
+
     print(ocr_df.shape)
-    print(ocr_df.head())
 
     #save the final dataframe to a csv
     ocr_df.to_csv(save_path, index=False)
