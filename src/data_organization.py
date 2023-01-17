@@ -42,7 +42,7 @@ def run(config_file_path):
             sector_year_img_list = [img for img in full_img_list if int(img.split(".")[0]) in intersect_list]
 
             # create the relevant sectoral folder within the year folder
-            new_directory = f"{os.path.join(image_path, year)}/sec_shorts[index]"
+            new_directory = f"{os.path.join(image_path, year)}/{sec_shorts[index]}"
             os.mkdir(new_directory)
 
             # conduct the copy operation
