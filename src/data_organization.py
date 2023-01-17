@@ -27,26 +27,26 @@ def run(config_file_path):
             # Get a full list of images from the folder containing the relevant year
             full_img_list = os.listdir(os.path.join(image_path, year))
 
-            # Get the job code list for matching purposes from the image list
-            job_code_list = [int(img.split(".")[0]) for img in full_img_list]
+            # # Get the job code list for matching purposes from the image list
+            # job_code_list = [int(img.split(".")[0]) for img in full_img_list]
 
-            # Filter the already filtered by data frame (by sector) by the relevant year
-            df_sector_year = df_sector[df_sector['job_code'].isin(job_code_list)].copy()
+            # # Filter the already filtered by data frame (by sector) by the relevant year
+            # df_sector_year = df_sector[df_sector['job_code'].isin(job_code_list)].copy()
 
-            # create array to conduct the intersect1D operation with numpy
-            #img_list_array = np.array(full_img_list)
-            job_code_array = np.array(job_code_list)
+            # # create array to conduct the intersect1D operation with numpy
+            # #img_list_array = np.array(full_img_list)
+            # job_code_array = np.array(job_code_list)
 
-            # get the intersection and save the output in a list of images for the relevant sector and the year
-            intersect_list = list(np.intersect1d(job_code_array, np.array(df_sector_year['job_code'])))
-            sector_year_img_list = [img for img in full_img_list if int(img.split(".")[0]) in intersect_list]
+            # # get the intersection and save the output in a list of images for the relevant sector and the year
+            # intersect_list = list(np.intersect1d(job_code_array, np.array(df_sector_year['job_code'])))
+            sector_year_img_list = [img for img in full_img_list if int(img.split(".")[0]) in list(df_sector['job_code'])]
 
             # create the relevant sectoral folder within the year folder
             new_directory = f"{os.path.join(image_path, year)}/{sec_shorts[index]}"
             os.mkdir(new_directory)
 
             # conduct the copy operation
-            for img in sector_year_img_list:
+            for img in sector_year_img_list[:5]:
                 src_file = os.path.join(image_path, year, img)
                 dst_file = os.path.join(image_path, year, sec_shorts[index], img)
                 # copy + Paste to the relevant folder
