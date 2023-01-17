@@ -65,6 +65,7 @@ def inversion(img):
             return img
     except:
         logging.error("Inversion failure. Moving on to the next image")
+        return img
 
 def super_res(images, ocr_model_path):
     """increase the image resolution using OpenCV's ESPCN deep learning model"""
@@ -75,12 +76,14 @@ def super_res(images, ocr_model_path):
         sr.readModel(ocr_model_path)
         sr.setModel("espcn", 3)
 
+        #TODO handle the upsample error at individual image level 
         super_res_images = [sr.upsample(img) for img in images]
 
         #upsample and return the image
         return super_res_images
     except:
         logging.error("Super resolution failure. Moving on to the next image")
+        return images
 
 def grayscale(img): #binarization_1
     """grayscaling images"""
@@ -88,6 +91,7 @@ def grayscale(img): #binarization_1
         return cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     except:
         logging.error("Grayscaling failure. Moving on to the next image")
+        return img
 
 def blackwhite(gray_image): #binarization_2
     """making images black and white"""
@@ -96,6 +100,7 @@ def blackwhite(gray_image): #binarization_2
         return im_bw
     except:
         logging.error("Binarization failure. Moving on to the next image")
+        return gray_image
     
 def noise_removal(image): #feed im_bw"
     """removes image noise"""
@@ -109,6 +114,7 @@ def noise_removal(image): #feed im_bw"
         return (image)
     except:
         logging.error("Noise removal failure. Moving on to the next image")
+        return image
 
 def thin_font(image):
     """makes bold fonts thinner - known as erosion"""
@@ -120,6 +126,7 @@ def thin_font(image):
         return image
     except:
         logging.error("Thinning font failure. Moving on to the next image")
+        return image
 
 def thick_font(image):
     """makes faint fonts bolder - known as dilation"""
@@ -131,6 +138,7 @@ def thick_font(image):
         return (image)
     except:
         logging.error("Thickening font failure. Moving on to the next image")
+        return image
 
 def remove_borders(image):
     """removes borders from images"""
@@ -143,6 +151,7 @@ def remove_borders(image):
         return (crop)
     except:
         logging.error("Border removal failure. Moving on to the next image")
+        return image
 
 def add_borders(image):
     """expands the edges, incase the letters start too close to the edge"""
@@ -152,6 +161,7 @@ def add_borders(image):
         return cv2.copyMakeBorder(image, top, bottom, left, right, cv2.BORDER_CONSTANT, value=color)
     except:
         logging.error("Border addition failure. Moving on to the next image")
+        return image
 
 def main(img_path, ocr_model_path):
     """sequences the image preprocessing steps into a processing chain"""
