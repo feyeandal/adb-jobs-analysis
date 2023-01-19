@@ -37,17 +37,17 @@ def run(config_file_path):
 
     #logging.info('OCR pipeline completed successfully! Starting classifying images to onet categories')
 
-    # matches = onet_classification.main(
-    #     data_path=config['data_path'],
-    #     occ_path=config['occ_path'],
-    #     alt_path=config['alt_path'],
-    #     tech_path=config['tech_path'],
-    #     ocr_output_path=config['ocr_output_path'],
-    #     lockdown_date_range=config['lockdown_date_range'],
-    #     # embedding_model=config['embedding_model'],
-    #     onet_corpus_path=config['onet_corpus_path'],
-    #     matches_path=config['matches_path']
-    # )
+    matches = onet_classification.main(
+        data_path=config['data_path'],
+        occ_path=config['occ_path'],
+        alt_path=config['alt_path'],
+        tech_path=config['tech_path'],
+        ocr_output_path=config['ocr_output_path'],
+        lockdown_date_range=config['lockdown_date_range'],
+        # embedding_model=config['embedding_model'],
+        onet_corpus_path=config['onet_corpus_path'],
+        matches_path=config['matches_path']
+    )
 
     # matches, confusion_matrix = onet_evaluation.main(
     #     matches_path=config['matches_path'],
@@ -61,12 +61,12 @@ def run(config_file_path):
     #     ocr_output_path=config['ocr_output_path']
     # )
 
-    topic_modeling_top2vec.main(
-        ocr_output_path=config['ocr_output_path'], 
-        wordclouds_path=config['wordclouds_path'], 
-        text_column_name=config['text_column_name'], 
-        embedding_model=config['embedding_model']
-    )
+    # topic_modeling_top2vec.main(
+    #     ocr_output_path=config['ocr_output_path'], 
+    #     wordclouds_path=config['wordclouds_path'], 
+    #     text_column_name=config['text_column_name'], 
+    #     embedding_model=config['embedding_model']
+    # )
 
     # return ocr_df, matches, confusion_matrix
 
