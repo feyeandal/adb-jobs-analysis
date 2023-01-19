@@ -117,7 +117,7 @@ def prepare_sample(sample, lockdown_date_range):
     adding lockdown and Work From Home mention status,
     and removing unneeded columns.'''
 
-    sample = calculate_lockdown_status(sample, lockdown_date_range)
+    #sample = calculate_lockdown_status(sample, lockdown_date_range)
     sample = calculate_wfh_mention_status(sample)
 
     sample = sample.rename(columns={'job_code': 'tj_code', 'job_title': 'tj_title', })
