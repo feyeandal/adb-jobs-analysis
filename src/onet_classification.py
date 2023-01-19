@@ -221,7 +221,7 @@ def get_onet_matches(sample, sample_comb, onet_data, matches_path):
     # Adding the ONET occupation code and family code of the matched occupation to each Topjobs posting
     for job in sample.tj_code:
         code = sample_comb.loc[job, sample_comb.columns].idxmax()
-        broad = code[0:6].astype(np.string_)+'0'
+        broad = str(code[0:6])+'0'
         family = code[0:2]
 
         matches.loc[job, 'onet_code'] = code
