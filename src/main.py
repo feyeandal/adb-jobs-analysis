@@ -65,7 +65,8 @@ def run(config_file_path):
         ocr_output_path=config['ocr_output_path'], 
         wordclouds_path=config['wordclouds_path'], 
         text_column_name=config['text_column_name'], 
-        embedding_model=config['embedding_model']
+        embedding_model=config['embedding_model'],
+        topic_model_path=config['topic_model_path']
     )
 
     # return ocr_df, matches, confusion_matrix

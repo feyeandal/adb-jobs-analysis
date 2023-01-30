@@ -15,7 +15,7 @@ def read_sample_data(ocr_output_path):
 
 # Topic Modeling Using Top2Vec
 
-def model_topics(df_column, embedding_model, wordclouds_path):
+def model_topics(df_column, embedding_model, wordclouds_path, topic_model_path):
     '''Executes topic modelling for the dataset.'''
 
     model = Top2Vec(df_column.values, embedding_model=embedding_model)
@@ -29,13 +29,13 @@ def model_topics(df_column, embedding_model, wordclouds_path):
             fp.write("%s\n" % model.topic_words[i])
 
 
-    model.save(f"{wordclouds_path}/cs_post_model.pb")   
+    model.save(topic_model_path)   
     return model
 
-def main(ocr_output_path, wordclouds_path, text_column_name, embedding_model):
+def main(ocr_output_path, wordclouds_path, text_column_name, embedding_model, topic_model_path):
     sample = read_sample_data(ocr_output_path)
 
-    model = model_topics(sample[text_column_name].astype(str), embedding_model, wordclouds_path)
+    model = model_topics(sample[text_column_name].astype(str), embedding_model, wordclouds_path, topic_model_path)
 
     num_topics = model.get_num_topics()
 
