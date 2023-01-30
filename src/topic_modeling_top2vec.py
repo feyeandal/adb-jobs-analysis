@@ -27,7 +27,9 @@ def model_topics(df_column, embedding_model, wordclouds_path):
             print(model.topic_words[i])
             model.generate_topic_wordcloud(i)
             fp.write("%s\n" % model.topic_words[i])
-    
+
+
+    model.save(f"{wordclouds_path}/cs_post_model.pb")   
     return model
 
 def main(ocr_output_path, wordclouds_path, text_column_name, embedding_model):
