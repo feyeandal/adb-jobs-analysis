@@ -4,7 +4,7 @@ script_name: "ocr_extraction"
 
 # Path to TopJobs advertisement images
 # image_path: "/home/kasun/projects/adb-jobs-analysis/data/cs_2020_archived"
-image_path: "/mnt/e/ADB_Project/github/adb-jobs-analysis/data/sample2
+image_path: "/mnt/e/ADB_Project/github/adb-jobs-analysis/data/sample2"
 
 # Path to the Topjobs metadata corpus
 data_path: "/mnt/e/ADB_Project/github/adb-jobs-analysis/data/data_full.xlsx"
