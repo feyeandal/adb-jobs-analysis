@@ -1,5 +1,5 @@
 import gensim
-import keras
+#import keras
 import logging
 import matplotlib.image  as mpimg
 import matplotlib.pyplot as plt
@@ -7,16 +7,16 @@ import nltk
 import numpy as np
 import pandas as pd
 import re
-import seaborn as sn
-import tensorflow as tf
+#import seaborn as sn
+#import tensorflow as tf
 
 from gensim.models import word2vec
 from gensim.models.fasttext import FastText
 from gensim.models.keyedvectors import KeyedVectors
-from keras import backend as K
-from keras.constraints import maxnorm
-from keras.models import Sequential,Model,load_model
-from keras.preprocessing.text import Tokenizer
+#from keras import backend as K
+#from keras.constraints import maxnorm
+#from keras.models import Sequential,Model,load_model
+#from keras.preprocessing.text import Tokenizer
 from nltk.stem import PorterStemmer
 from nltk.tokenize import word_tokenize
 from sklearn.feature_extraction.text import TfidfVectorizer

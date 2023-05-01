@@ -3,8 +3,8 @@ import matplotlib.pyplot as plt
 import nltk
 import numpy as np
 import pandas as pd
-import seaborn as sn
-import yaml
+#import seaborn as sn
+#import yaml
 import logging
 
 # Reading the Evaluation Corpus

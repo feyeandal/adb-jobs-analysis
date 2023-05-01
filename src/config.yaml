@@ -4,7 +4,7 @@ script_name: "ocr_extraction"
 
 # Path to TopJobs advertisement images
 # image_path: "/home/kasun/projects/adb-jobs-analysis/data/cs_2020_archived"
-image_path: "/mnt/e/ADB_Project/github/adb-jobs-analysis/data/sample1"
+image_path: "/mnt/e/ADB_Project/github/adb-jobs-analysis/data/sample2
 
 # Path to the Topjobs metadata corpus
 data_path: "/mnt/e/ADB_Project/github/adb-jobs-analysis/data/data_full.xlsx"
@@ -17,13 +17,13 @@ occ_path: "/mnt/e/ADB_Project/github/adb-jobs-analysis/data/onet_occ_titles.csv"
 alt_path: "/mnt/e/ADB_Project/github/adb-jobs-analysis/data/onet_alt_titles.csv"
 
 # Path to the dataset of technologies associated with ONET occupations
-tech_path: "/home/kasun/projects/adb-jobs-analysis/data/onet_tech_skills.txt"
+tech_path: "/mnt/e/ADB_Project/github/adb-jobs-analysis/data/onet_tech_skills.csv"
 
 # Path to the dataset of manually annotated tags for the Topjobs data sample
-tags_path: "/home/kasun/projects/adb-jobs-analysis/data/cs_sample_tags.csv"
+tags_path: "/mnt/e/ADB_Project/github/adb-jobs-analysis/data/cs_sample_tags.csv"
 
 # Path to the OCR outputs for the Topjobs data sample
-ocr_output_path: "/home/kasun/projects/adb-jobs-analysis/results/p1a.csv"
+ocr_output_path: "/home/kasun/projects/adb-jobs-analysis/results/sample_output.csv"
 
 # Date range during which lockdown was implemented (ASSUMPTION: All dates beyond 2020-03-01 are considered to be under lockdown)
 lockdown_date_range: [
@@ -32,16 +32,16 @@ lockdown_date_range: [
 ]
 
 # Path to ONET Corpus
-onet_corpus_path: "/home/kasun/projects/adb-jobs-analysis/results/onet_corpus.csv"
+onet_corpus_path: "/mnt/e/ADB_Project/github/adb-jobs-analysis/results/onet_corpus.csv"
 
 # Path to matches file 
-matches_path: "/home/kasun/projects/adb-jobs-analysis/results/sample_matches.csv"
+matches_path: "/mnt/e/ADB_Project/github/adb-jobs-analysis/results/sample_matches.csv"
 
 # Path to wordclouds file
-wordclouds_path: "/home/kasun/projects/adb-jobs-analysis/results/wordclouds.txt"
+wordclouds_path: "/mnt/e/ADB_Project/github/adb-jobs-analysis/results/wordclouds.txt"
 
 # Path to the OCR model
-ocr_model_path: "/home/kasun/projects/adb-jobs-analysis/models/ESPCN_x3.pb"
+ocr_model_path: "/mnt/e/ADB_Project/github/adb-jobs-analysis/models/ESPCN_x3.pb"
 
 # Embedding Model for Top2Vec topic modelling
 embedding_model: "universal-sentence-encoder"
