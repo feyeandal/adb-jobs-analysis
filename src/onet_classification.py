@@ -222,7 +222,7 @@ def get_onet_matches(sample, sample_comb, onet_data, matches_path):
     for job in sample.tj_code:
         code = sample_comb.loc[job, sample_comb.columns].idxmax()
         broad = str(code[0:6])+'0'
-        family = code[0:2]
+        family = str(code[0:2])
 
         matches.loc[job, 'onet_code'] = code
         matches.loc[job, 'onet_broad_occupation_category'] = broad
