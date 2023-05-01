@@ -4,17 +4,17 @@ script_name: "ocr_extraction"
 
 # Path to TopJobs advertisement images
 # image_path: "/home/kasun/projects/adb-jobs-analysis/data/cs_2020_archived"
-image_path: "/home/kasun/projects/adb-jobs-analysis/data/image_sample"
+image_path: "/mnt/e/ADB_Project/github/adb-jobs-analysis/data/sample1"
 
 # Path to the Topjobs metadata corpus
-data_path: "/home/kasun/projects/adb-jobs-analysis/data/data_full.xlsx"
+data_path: "/mnt/e/ADB_Project/github/adb-jobs-analysis/data/data_full.xlsx"
 
 # Path to the dataset of ONET occupation titles
-occ_path: "/home/kasun/projects/adb-jobs-analysis/data/onet_occ_titles.txt"
+occ_path: "/mnt/e/ADB_Project/github/adb-jobs-analysis/data/onet_occ_titles.csv"
 #"C:/Users/DELL/Documents/LIRNEasia/ADB/data/onet_occ_titles.txt"
 
 # Path to the dataset of ONET alternate occupation titles
-alt_path: "/home/kasun/projects/adb-jobs-analysis/data/onet_alt_titles.txt"
+alt_path: "/mnt/e/ADB_Project/github/adb-jobs-analysis/data/onet_alt_titles.csv"
 
 # Path to the dataset of technologies associated with ONET occupations
 tech_path: "/home/kasun/projects/adb-jobs-analysis/data/onet_tech_skills.txt"
