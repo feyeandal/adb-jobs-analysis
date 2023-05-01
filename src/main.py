@@ -2,7 +2,7 @@ import logging
 import ocr_pipeline
 import onet_classification
 import onet_evaluation
-import skills_analysis
+#import skills_analysis
 import topic_modeling_top2vec
 import argparse
 
