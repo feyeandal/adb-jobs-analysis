@@ -7,7 +7,7 @@ import gensim
 import gensim.corpora as corpora
 from gensim.utils import simple_preprocess
 from gensim.models import CoherenceModel
-import yaml
+#import yaml
 
 # Download stopwords and spacy model
 nltk.download('stopwords')
