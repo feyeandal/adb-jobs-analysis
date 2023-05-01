@@ -32,13 +32,13 @@ This is a datasheet consisting of metadata related to each of the job vacancy po
 The metadata file is available [*here*](https://lirneasia2-my.sharepoint.com/:x:/g/personal/merl_lirneasia_net/EW4xiospTGBYyZITmNzjXy0BIJWwe0r2b32z1zWZ3U_eYw?e=VpEcrG).
 
 ## ONET Occupation Titles
-Occupation title for each of the O*NET occupation categories are included in this dataset, which is available to download [*here*](https://lirneasia2-my.sharepoint.com/:x:/g/personal/vihanga_lirneasia_net/EcjJgUZd5nlGhAxSnVjYldgBfo-YPQbIN5FxxD0Onpx6wA?e=iRdS5b).
+Occupation title for each of the O*NET occupation categories are included in this dataset, which is available to download [*here*](https://raw.githubusercontent.com/LIRNEasia/adb-jobs-analysis/main/data/onet_data/onet_occ_titles.txt).
 
 ## ONET Alternate Occupation Titles
-This file includes a list of alternative occupation titles that are commonly used for each of the O*NET occupations. The dataset is available [*here*](https://lirneasia2-my.sharepoint.com/:x:/g/personal/vihanga_lirneasia_net/EZqhR_WxJWRPhLRetQf3qSIBIHWs4CelvrklqTS6KASaZA?e=l9RH4X).
+This file includes a list of alternative occupation titles that are commonly used for each of the O*NET occupations. The dataset is available [*here*](https://raw.githubusercontent.com/LIRNEasia/adb-jobs-analysis/main/data/onet_data/onet_alt_titles.txt).
 
 ## Technologies Associated with ONET Occupations
-Technologies that are commonly utilized in each O*NET occupation category, and therefore are associated with the occupation category, are included in this dataset, which is available [*here*](https://lirneasia2-my.sharepoint.com/:x:/g/personal/vihanga_lirneasia_net/EXIntZTRBaJBsqm47UnIj38BODETLsEZCAg3IlP2gWTU_Q?e=1bnkZ2).
+Technologies that are commonly utilized in each O*NET occupation category, and therefore are associated with the occupation category, are included in this dataset, which is available [*here*](https://raw.githubusercontent.com/LIRNEasia/adb-jobs-analysis/main/data/onet_data/onet_tech_skills.txt).
 
 ## TopJobs Manually Annotated Tags
 This is a sample of 500 job vacancy postings that was manually annotated with corresponding O*NET categories. The dataset is available for download  [*here*](https://drive.google.com/file/d/1aHbwE212BWWWE0i1Aem8deDLEKQACWIs/view?usp=sharing).
