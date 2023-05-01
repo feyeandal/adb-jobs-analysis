@@ -3,7 +3,7 @@ import ocr_pipeline
 import onet_classification
 import onet_evaluation
 #import skills_analysis
-import topic_modeling_top2vec
+#import topic_modeling_top2vec
 import argparse
 
 from utils import read_config_file
