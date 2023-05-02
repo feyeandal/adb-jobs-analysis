@@ -150,26 +150,23 @@ def update_ocr(low_accuracy_images, ocr_model_path, acc_threshold):
 
 def main(read_path, save_path, ocr_model_path, acc_threshold):
     """ reads images from a directory and saves final ocr output to a csv"""
+
     #uses the ocr_extraction sub-module to conduct initial OCR and build a dataframe
     logging.info('Extracting text from images...')
     text, low_accuracy_images = extract_text_bulk(read_path, acc_threshold)
     print(f"The length of the Dictionary is {len(text)}")
 
+    # --------------------------------------------------------------
+
+    # create a dataframe from the first round of OCR
     ocr_df = pd.DataFrame.from_dict(text, orient="index" 
                         #   columns=["vacancy_id", "file_path", "ocrd_text", "clean_text", "plain_accuracy", "clean_accuracy"]
                         ).transpose() #insert column headers here
 
     print(ocr_df.shape)
     
-    #basic cleaning to strip additional characters 
-    #logging.info('Cleaning the extracted text...')
-    #ocr_df["clean_text"] = ocr_df["ocrd_text"].apply(strip_additional_characters)
-    
-    #evaluate ocr quality
-    #logging.info('Evaluating accuracy of ocr quality')
-    #ocr_df["plain_accuracy"] = ocr_df["ocrd_text"].apply(calculate_accuracy)
-    #ocr_df["clean_accuracy"] = ocr_df["clean_text"].apply(calculate_accuracy)
-    
+    # ---------------------------------------------------------------
+
     #iteratre through the dataset, identify poor quality ocr, preprocess images & perform ocr again
     ocr_df_cleaned, num_images_below_threshold_post_cleaning = update_ocr(low_accuracy_images, ocr_model_path, acc_threshold)
 
