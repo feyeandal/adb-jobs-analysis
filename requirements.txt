@@ -13,6 +13,8 @@ gensim==4.2.0
 top2vec==1.0.27
 nltk==3.7
 spacy==3.4.1
+scikit-learn==0.24.1
+hdbscan==0.8.29
 keras==2.10.0
 tensorflow==2.10.0
 seaborn==0.12.0
