@@ -24,8 +24,8 @@ To that end, this repository is organized into modules which achieve three key t
 The input data usde for the study are available to download at the following locations.
 
 ## TopJobs Images
-Job vacancies in TopJobs are posted in the form of jpg or png images. A set of such images for vacancy postings in Tourism and IT categories are included in this.
-The zipped images are available [*here*](https://lirneasia2-my.sharepoint.com/:u:/g/personal/merl_lirneasia_net/Ef4n8KNHTIlBhHwKshd22J0BOOJdwgu2sktWQaFCGL8WBQ?e=SPGHec). Once downloaded, the sub folders should be unzipped and images should be merged into a single folder to replicate the study.
+Job vacancies in TopJobs are posted in the form of jpg or png images. The full set of image vacancies (for the 2018-2021 period) and corresponding meta data have been shared separately. A small subset of image vacancies from the IT/Software sector of TopJobs is linked here (as a zipped folder) for purposes of illustration/replication. Any subset of images from the larger database can be executed using this method.
+The zipped images are available [*here*](https://lirneasia2-my.sharepoint.com/:u:/g/personal/merl_lirneasia_net/Ef4n8KNHTIlBhHwKshd22J0BOOJdwgu2sktWQaFCGL8WBQ?e=SPGHec). All your data should be stored in a single folder to replicate the study.
 
 ## TopJobs Metadata
 This is a datasheet consisting of metadata related to each of the job vacancy postings mentioned above, obtained from TopJobs. Details such as the time of posting, job title, and the functional area of the job are included in this file.
