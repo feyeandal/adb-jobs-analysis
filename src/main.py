@@ -44,7 +44,6 @@ def run(config_file_path):
         tech_path=config['tech_path'],
         ocr_output_path=config['ocr_output_path'],
         lockdown_date_range=config['lockdown_date_range'],
-        # embedding_model=config['embedding_model'],
         onet_corpus_path=config['onet_corpus_path'],
         matches_path=config['matches_path']
     )

@@ -62,7 +62,7 @@ def extract_text_bulk(folder_path, acc_threshold):
                 vacancies.append(vacancy.split(".")[0])
                 image2text.append(text)
 
-        except: #TODO Catch a specific exception
+        except:
             tesseract_failures.append(vacancy)
             logging.error(f"Tesseract Failure: {vacancy}")   
     
@@ -177,6 +177,8 @@ def main(read_path, save_path, ocr_model_path, acc_threshold):
     logging.info(f'Post cleaning, {(num_images_below_threshold_post_cleaning/ocr_df.shape[0]) * 100}% images below threshold')
 
     print(ocr_df.shape)
+
+    # ----------------------------------------------------------------
 
     #save the final dataframe to a csv
     ocr_df.to_csv(save_path, index=False)

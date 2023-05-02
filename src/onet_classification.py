@@ -256,33 +256,41 @@ def main(data_path, occ_path, alt_path, tech_path, ocr_output_path, lockdown_dat
     print(type(onet_data.shape))
     print(onet_data.head())
 
+    # Reading meta data
     logging.info('Reading topjobs data')
     sample = read_topjobs_data(data_path)
 
     print(sample.shape)
     print(sample.head())
 
+    # Reading OCR Output data
     logging.info('Appending ocr output')
     sample = append_ocr_output(ocr_output_path, sample)
 
     print(sample.shape)
     print(sample.head())
 
+    # combine meta data, add vacancy data and do relevant transformations
     logging.info('Preparing sample')
     sample = prepare_sample(sample, lockdown_date_range)
 
+    # Creating ONET Corpus
     logging.info('Onet corpus')
     onet_corpus = create_onet_corpus(onet_data, onet_corpus_path)
 
+    # Creates and trains a tf-idf vectorizer on the ONET corpus consisting of occupation titles and alternate titles. 
     logging.info('TFIDF')
     tfidf_vect, onet_tfidf = create_tf_idf_vector(onet_corpus)
 
+    # Generates tf-idf vectors for the data sample.
     logging.info('vectorizing')
     sample_tfidf_title, sample_tfidf_desc = vectorize_sample(sample, tfidf_vect)
     
+    # Do COSINE Similarity Comparisons
     logging.info('cosine similarity')
     sample_comb = calculate_cosine_similarity(onet_tfidf, sample_tfidf_title, sample_tfidf_desc, onet_data, sample)
 
+    # Combines the Topjobs data sample with details of the ONET occupation matched to each vacancy posting via tf-idf.
     logging.info('getting matches')
     matches = get_onet_matches(sample, sample_comb, onet_data, matches_path)
     
