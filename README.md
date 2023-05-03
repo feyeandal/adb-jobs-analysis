@@ -68,6 +68,12 @@ $ git clone git@github.com:LIRNEasia/adb-jobs-analysis.git
 $ pip install -r requirements.txt
 ```
 
+5. Download the Spacy model *en_core_web_sm* required for LDA-based topic analysis. This can be done by running the following code snippet from your command line.
+```
+$ python -m spacy download en_core_web_sm
+```
+
+Once you successfully complete these steps, you have your developement environment setup to replicate this analysis. 
 
 # Scripts
 The Python script *main.py* handles the overall process. To run a selected module or a set of modules, the variable *process_name* in the configuration file *config.yaml* should be updated as follows.
@@ -134,6 +140,7 @@ To run the Top2Vec skills analysis, the following filepath in *config.yaml* shou
 # Replicating the Study
 In order to replicate this study, the following steps could be followed.
 - Download all the data mentioned in the **Data** section to your device.
+- Unzip the TopJobs image data and merge all the subfolders into a single folder.
 - Set up your device following the steps mentioned in the **Setting Up** Section.
 - Unzip the set of TopJobs Image folders and merge all the images included into a single folder.
 - Update all filepaths and folderpaths in the file **config.yaml** to the relevant paths on your device.
