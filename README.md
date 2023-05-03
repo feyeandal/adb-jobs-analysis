@@ -46,18 +46,28 @@ This is a sample of 500 job vacancy postings that was manually annotated with co
 ## Image Upscaling Model
 This model is used to improve the performance of optical character recognition by enhancing the resolution of images. The trained model is available [*here*](https://lirneasia2-my.sharepoint.com/:u:/g/personal/vihanga_lirneasia_net/ERXGlwalEQBPjXibnPNyXeABPiU5VkIo6VMe116UDbMtLA?e=xKHnCJ).
 
-# Setting Up
-Your device can be set up to run this code by following the given steps.
-- Clone the GitHub Repository associated with this study. You can find the repository [*here*](https://github.com/LIRNEasia/adb-jobs-analysis.git).
-- This project was developed and tested on Python 3.8.10. Installing the same version on your device before running the scripts could ensure smooth operation of the process. You can find detailed instructions on installing Python [*here*](https://docs.python.org/3/using/index.html).
-- We use the Google's Tesseract engine and its Python wrapper pytesseract for optical character recognition. In order to use that you have to download and install Tesseract on your device. You may follow one of the following tutorials to install Tesseract, based on your OS.
+# Setting Up the Dev Environment
+Your device can be set up to run this analysis by following the given steps. We recommend using a *NIX based OS for running this analysis (e.g., Linux distribution or MacOS)
+
+1. Clone the GitHub Repository (the example below assumes that github authentication is performed using ssh)
+```
+$ git clone git@github.com:LIRNEasia/adb-jobs-analysis.git
+```
+
+2. This project was developed and tested on Python 3.8.10. It is advised to set up a Python virtual environment with the same Python version. Virtual environments can be created using either `venv`, `conda`, or `pyenv`. We recommend using `pyenv` as it enables managing different python versions as well (more info on pyenv can be found [here](https://github.com/pyenv/pyenv)
+
+
+3.  We use the Google's Tesseract engine and its Python wrapper pytesseract for optical character recognition. In order to use that you have to download and install Tesseract on your device. You may follow one of the following tutorials to install Tesseract, based on your OS.
     - [Windows Users](https://codetoprosper.com/tesseract-ocr-for-windows)
     - [Mac Users](https://www.oreilly.com/library/view/building-computer-vision/9781838644673/95de5b35-436b-4668-8ca2-44970a6e2924.xhtml)
     - [Ubuntu Users](https://linuxhint.com/install-tesseract-ocr-linux/)
-- Download the [Requirements File](https://github.com/LIRNEasia/adb-jobs-analysis/blob/b53aa3bc076b4df0072c07d0d36b547eac1a89ff/requirements.txt) and install the dependencies.
-- Unzip the TopJobs image data and merge all the subfolders into a single folder.
-- Download the Spacy model *en_core_web_sm* required for LDA-based topic analysis. This can be done by running the following code snippet from your command line.
-    - `python -m spacy download en_core_web_sm`
+    
+4. Once the virtual environment is created with Python 3.8.10, please activate it. Then, we can install the Python packages necessary to run this analysis using the provided `requirements.txt` file using the following command. 
+
+```
+$ pip install -r requirements.txt
+```
+
 
 # Scripts
 The Python script *main.py* handles the overall process. To run a selected module or a set of modules, the variable *process_name* in the configuration file *config.yaml* should be updated as follows.
